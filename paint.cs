@@ -42,35 +42,35 @@ public class Img
             "        @@@@          @@@@@@@@@@@          @@@@",
             "      @@@@@              @@@@@@@              @@@@@",
             "  @@@@@@@                                 @@@@@@@",
-            " @@@@@                                   @@@@@" // Обратите внимание: здесь должно быть 5 @
+            " @@@@@                                   @@@@@" 
         };
 
     public static void PrintFallingCharsEffect(int delay = 1)
     {
         Console.CursorVisible = false;
-        // Позиция начала черепа (после надписи)
+        
         int startTop = Console.CursorTop;
 
-        // Создаем массив для отслеживания позиций символов
+        
         List<(int targetRow, int col, char ch, int currentRow)> fallingChars =
             new List<(int, int, char, int)>();
 
         Random random = new Random();
 
-        // Собираем все символы, которые нужно вывести
+        
         for (int row = 0; row < image.Length; row++)
         {
             for (int col = 0; col < image[row].Length; col++)
             {
                 if (image[row][col] != ' ')
                 {
-                    // Начальная позиция выше экрана
+                    
                     fallingChars.Add((row, col, image[row][col], -random.Next(1, 10)));
                 }
             }
         }
 
-        // Перемешиваем символы
+        
         Shuffle(fallingChars, random);
 
         bool allLanded;
@@ -79,13 +79,13 @@ public class Img
             allLanded = true;
             Console.SetCursorPosition(0, startTop);
 
-            // Очищаем только область черепа (не трогаем надпись)
+            
             for (int i = 0; i < image.Length; i++)
             {
                 Console.WriteLine(new string(' ', Console.WindowWidth));
             }
 
-            // Используем обычный for вместо foreach
+            
             for (int i = 0; i < fallingChars.Count; i++)
             {
                 var (targetRow, col, ch, currentRow) = fallingChars[i];
@@ -94,20 +94,20 @@ public class Img
                 {
                     allLanded = false;
 
-                    // Символ еще падает
+                    
                     if (currentRow >= 0 && currentRow < image.Length)
                     {
                         Console.SetCursorPosition(col, startTop + currentRow);
                         Console.Write(ch);
                     }
 
-                    // Увеличиваем текущую строку
+                    
                     currentRow++;
                     fallingChars[i] = (targetRow, col, ch, currentRow);
                 }
                 else
                 {
-                    // Символ на месте
+                    
                     Console.SetCursorPosition(col, startTop + targetRow);
                     Console.Write(ch);
                 }
@@ -125,14 +125,14 @@ public class Img
     {
         Console.CursorVisible = false;
 
-        // Позиция начала черепа (предполагаем, что он уже нарисован)
+        
         int currentTop = Console.CursorTop;
         int skullStartTop = Math.Max(0, currentTop - image.Length);
 
-        // Сохраняем оригинальный цвет
+        
         ConsoleColor originalColor = Console.ForegroundColor;
 
-        // Массив цветов для мерцания
+        
         ConsoleColor[] colors = {
                 ConsoleColor.White,
                 ConsoleColor.Yellow,
@@ -149,10 +149,10 @@ public class Img
         Random random = new Random();
             for (int i = 0; i < blinkCount; i++)
             {
-                // Выбираем случайный цвет для черепа
+                
                 Console.ForegroundColor = colors[random.Next(colors.Length)];
 
-                // Перерисовываем череп
+                
                 Console.SetCursorPosition(0, skullStartTop);
                 foreach (string line in image)
                 {
@@ -162,10 +162,10 @@ public class Img
                 Thread.Sleep(blinkDelay);
             }
 
-            // Возвращаем белый цвет
+            
             Console.ForegroundColor = ConsoleColor.White;
 
-            // Перерисовываем череп в белом цвете
+            
             Console.SetCursorPosition(0, skullStartTop);
             foreach (string line in image)
             {
@@ -207,43 +207,43 @@ public class Rain
         Console.Clear();
         Console.CursorVisible = false;
         
-        // Сохраняем оригинальный цвет консоли
+        
         var originalForeground = Console.ForegroundColor;
         var originalBackground = Console.BackgroundColor;
         
         try
         {
-            // Устанавливаем темный фон для эффекта ночного дождя
+            
             Console.BackgroundColor = ConsoleColor.Black;
             Console.Clear();
             
-            // Создаем эффект дождя в отдельном потоке
+            
             var cancellationTokenSource = new CancellationTokenSource();
             var rainTask = Task.Run(() => PrintRain(cancellationTokenSource.Token));
             
-            // Показываем инструкцию
+            
             Console.SetCursorPosition(Console.WindowWidth / 2 - 15, 5);
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("[ PRESS ANY KEY TO CONTINUE ]");
             
-            // Ждем нажатия клавиши
+            
             Console.ReadKey(true);
             
-            // Останавливаем дождь
-            cancellationTokenSource.Cancel();
-            rainTask.Wait(1000); // Ждем завершения задачи
             
-            // Очищаем экран и показываем информацию
+            cancellationTokenSource.Cancel();
+            rainTask.Wait(1000); 
+            
+            
             Console.Clear();
             ShowReadMeInformation();
             
-            // Ждем нажатия клавиши для возврата в меню
+            
             Console.WriteLine("\n\nPress any key to return to main menu...");
             Console.ReadKey(true);
         }
         finally
         {
-            // Восстанавливаем оригинальные цвета
+            
             Console.ForegroundColor = originalForeground;
             Console.BackgroundColor = originalBackground;
             Console.CursorVisible = true;
@@ -255,15 +255,15 @@ public class Rain
         int width = Console.WindowWidth;
         int height = Console.WindowHeight;
         
-        // Количество капель
-        int rainCount = Math.Min(width, 80); // Ограничиваем количество
+        
+        int rainCount = Math.Min(width, 80); 
         int[] x = new int[rainCount];
         int[] y = new int[rainCount];
-        char[] chars = new char[rainCount]; // Разные символы для дождя
-        ConsoleColor[] colors = new ConsoleColor[rainCount]; // Разные цвета
+        char[] chars = new char[rainCount]; 
+        ConsoleColor[] colors = new ConsoleColor[rainCount]; 
         Random rand = new Random();
         
-        // Начальное заполнение
+        
         for (int i = 0; i < rainCount; i++)
         {
             x[i] = rand.Next(0, width);
@@ -278,21 +278,21 @@ public class Rain
             {
                 for (int i = 0; i < rainCount; i++)
                 {
-                    // Проверяем, не была ли нажата клавиша
+                    
                     if (cancellationToken.IsCancellationRequested)
                         break;
                     
-                    // Стираем старую каплю (рисуем пробел)
+                    
                     if (y[i] >= 0 && y[i] < height && x[i] >= 0 && x[i] < width)
                     {
                         Console.SetCursorPosition(x[i], y[i]);
                         Console.Write(" ");
                     }
                     
-                    // Двигаем каплю вниз
+                    
                     y[i]++;
                     
-                    // Если капля упала за предел экрана, переносим её наверх
+                    
                     if (y[i] >= height)
                     {
                         y[i] = 0;
@@ -301,7 +301,7 @@ public class Rain
                         colors[i] = GetRandomRainColor(rand);
                     }
                     
-                    // Рисуем каплю в новой позиции
+                    
                     if (y[i] >= 0 && y[i] < height && x[i] >= 0 && x[i] < width)
                     {
                         Console.SetCursorPosition(x[i], y[i]);
@@ -310,12 +310,12 @@ public class Rain
                     }
                 }
                 
-                // Скорость анимации
+                
                 Thread.Sleep(30);
             }
             catch (Exception)
             {
-                // Игнорируем ошибки (например, изменение размера окна)
+                
                 break;
             }
         }
@@ -323,7 +323,7 @@ public class Rain
     
     private static char GetRandomRainChar(Random rand)
     {
-        char[] rainChars = { '|', '│', '┃', '╽', '╿', '║', ':', '\'', '.' };
+        char[] rainChars = ['|', '│', '┃', '╽', '╿', '║', ':', '\'', '.'];
         return rainChars[rand.Next(rainChars.Length)];
     }
     
@@ -346,7 +346,7 @@ public class Rain
         Console.Clear();
         Console.ForegroundColor = ConsoleColor.Cyan;
         
-        // Красивый заголовок
+        
         string title = @"
 ╔══════════════════════════════════════════════════════╗
 ║                 SYSTEM MONITOR v1.0                  ║
@@ -359,8 +359,8 @@ public class Rain
         Console.ForegroundColor = ConsoleColor.DarkYellow;
         Console.WriteLine("╔══════════════════════════════════════════════════════╗");
         Console.WriteLine("║This programm made by me =)                           ║");
-        Console.WriteLine("║Telegram: https://t.me/+URXdMVxOgrdiMDRi              ║");
-        Console.WriteLine("║Steam: https://steamcommunity.com/id/d3s0lation       ║");
+        Console.WriteLine("║                                                      ║");
+        Console.WriteLine("║                                                      ║");
         Console.WriteLine("╚══════════════════════════════════════════════════════╝");
     }
 }

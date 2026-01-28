@@ -17,7 +17,7 @@ using Microsoft.Win32;
 
 public class GetInfoPc
 {
-    // Импорты Windows API для скриншота
+    
     [DllImport("user32.dll")]
     private static extern IntPtr GetDesktopWindow();
 
@@ -58,18 +58,18 @@ public class GetInfoPc
         string result = "";
         try
         {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+#pragma warning disable CA1416 
             ManagementObjectSearcher searcher = new ManagementObjectSearcher($"SELECT {classProperty} FROM {win32Class}");
-#pragma warning restore CA1416 // Проверка совместимости платформы
-#pragma warning disable CA1416 // Проверка совместимости платформы
+#pragma warning restore CA1416 
+#pragma warning disable CA1416 
             foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
             {
                 string value = obj[classProperty]?.ToString() ?? "";
-                // Экранируем квадратные скобки, чтобы Spectre.Console не пытался их парсить как теги
+                
                 value = value.Replace("[", "\\[").Replace("]", "\\]");
                 result += value + Environment.NewLine;
             }
-#pragma warning restore CA1416 // Проверка совместимости платформы
+#pragma warning restore CA1416 
         }
         catch (Exception ex)
         {
@@ -83,15 +83,15 @@ public class GetInfoPc
     {
         try
         {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+#pragma warning disable CA1416 
             var identity = WindowsIdentity.GetCurrent();
-#pragma warning restore CA1416 // Проверка совместимости платформы
-#pragma warning disable CA1416 // Проверка совместимости платформы
+#pragma warning restore CA1416 
+#pragma warning disable CA1416 
             var principal = new WindowsPrincipal(identity);
-#pragma warning restore CA1416 // Проверка совместимости платформы
-#pragma warning disable CA1416 // Проверка совместимости платформы
+#pragma warning restore CA1416 
+#pragma warning disable CA1416 
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
-#pragma warning restore CA1416 // Проверка совместимости платформы
+#pragma warning restore CA1416 
         }
         catch { return false; }
     }
@@ -102,16 +102,16 @@ public class GetInfoPc
 
         try
         {
-            // Простой заголовок без сложной разметки
+            
             AnsiConsole.Write(new Rule("System Information Report"));
             AnsiConsole.WriteLine();
 
-            // Используем панель вместо дерева
+            
             var grid = new Grid();
             grid.AddColumn();
             grid.AddColumn();
 
-            // Общая информация
+            
             var generalInfo = new Panel(
                 $"[bold]General Information[/]\n\n" +
                 $"Computer: [white]{Environment.MachineName}[/]\n" +
@@ -123,7 +123,7 @@ public class GetInfoPc
                 .BorderColor(Spectre.Console.Color.Green)
                 .Padding(1, 1);
 
-            // Информация о железе
+            
             string cpuInfo = "Not available";
             string gpuInfo = "Not available";
 
@@ -146,11 +146,11 @@ public class GetInfoPc
             grid.AddRow(generalInfo, hardwareInfo);
             AnsiConsole.Write(grid);
 
-            // Информация о дисках в отдельной таблице
+            
             AnsiConsole.WriteLine();
             ShowDriveInfoSimple();
 
-            // Кнопка для создания полного отчета
+            
             AnsiConsole.WriteLine();
             if (AnsiConsole.Confirm("[yellow]Create detailed report file?[/]", true))
             {
@@ -162,14 +162,14 @@ public class GetInfoPc
         }
         catch (Exception ex)
         {
-            // Простой вывод ошибки
+            
             Console.WriteLine($"Error: {ex.Message}");
             Console.WriteLine("\nPress any key to continue...");
             Console.ReadKey();
         }
     }
 
-    // Упрощенная версия GetHardwareInfo
+    
     static string GetHardwareInfoSimple(string win32Class, string classProperty)
     {
         try
@@ -181,7 +181,7 @@ public class GetInfoPc
             foreach (ManagementObject obj in searcher.Get())
             {
                 string value = obj[classProperty]?.ToString() ?? "";
-                // Удаляем все квадратные скобки чтобы избежать проблем с разметкой
+                
                 value = value.Replace("[", "").Replace("]", "");
                 if (!string.IsNullOrEmpty(value))
                 {
@@ -190,7 +190,7 @@ public class GetInfoPc
             }
 
             string info = result.ToString().Trim();
-            return string.IsNullOrEmpty(info) ? "Not available" : info.Split('\n')[0]; // Берем только первую строку
+            return string.IsNullOrEmpty(info) ? "Not available" : info.Split('\n')[0]; 
 #pragma warning restore CA1416
         }
         catch
@@ -199,7 +199,7 @@ public class GetInfoPc
         }
     }
 
-    // Упрощенная версия ShowDriveInfo
+    
     private static void ShowDriveInfoSimple()
     {
         try
@@ -247,7 +247,7 @@ public class GetInfoPc
         return new string('█', filled) + new string('░', 10 - filled);
     }
 
-    // Метод для создания детального отчета
+    
     private static void CreateDetailedReport()
     {
         try
@@ -307,7 +307,7 @@ public class GetInfoPc
 
             AnsiConsole.MarkupLine($"[green]Report created: {reportFile}[/]");
 
-            // Открываем папку с отчетом
+            
             if (Directory.Exists(folderPath))
             {
                 Process.Start("explorer.exe", folderPath);
@@ -319,7 +319,7 @@ public class GetInfoPc
         }
     }
 
-    // Метод для получения информации для файла (без ограничений разметки)
+    
     private static string GetHardwareInfoForFile(string win32Class, string classProperty)
     {
         try
@@ -346,7 +346,7 @@ public class GetInfoPc
             return $"Error: {ex.Message}";
         }
     }
-    // Добавьте в класс GetInfoPc
+    
     public static void TakeScreenshotMenu()
     {
         Console.Clear();
@@ -407,7 +407,7 @@ public class GetInfoPc
         Console.ReadKey();
     }
 
-    // Метод для создания нескольких скриншотов
+    
     private static void CreateMultipleScreenshots(int count, int delayMs, string folderPath)
     {
         Console.WriteLine($"Creating {count} screenshots with {delayMs}ms delay...");
@@ -435,10 +435,10 @@ public class GetInfoPc
 
         Console.WriteLine($"\nFinished! Created {count} screenshots in: {folderPath}");
     }
-    // Добавьте этот метод в класс GetInfoPc в файле Main_Information_Collection.cs
+    
     public static void TakeScreenshot()
     {
-        // 1. Создаем папку для отчетов на рабочем столе
+        
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         string folderPath = Path.Combine(desktopPath, "SystemReport");
 
@@ -448,7 +448,7 @@ public class GetInfoPc
             Console.WriteLine($"[+] Папка создана: {folderPath}");
         }
 
-        // Создаем уникальное имя файла с датой и временем
+        
         string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
         string screenshotPath = Path.Combine(folderPath, $"screenshot_{timestamp}.jpg");
 
@@ -461,38 +461,38 @@ public class GetInfoPc
 
         try
         {
-            // Получаем размеры экрана
+            
             int screenWidth = GetSystemMetrics(SM_CXSCREEN);
             int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-            // Получаем DC для всего экрана
+            
             IntPtr desktopWindow = GetDesktopWindow();
             hdcSrc = GetWindowDC(desktopWindow);
             hdcDest = CreateCompatibleDC(hdcSrc);
             hBitmap = CreateCompatibleBitmap(hdcSrc, screenWidth, screenHeight);
             hOldBitmap = SelectObject(hdcDest, hBitmap);
 
-            // Копируем экран
+            
             BitBlt(hdcDest, 0, 0, screenWidth, screenHeight, hdcSrc, 0, 0, SRCCOPY);
 
-            // Создаем Bitmap из HBitmap
-#pragma warning disable CA1416 // Проверка совместимости платформы
+            
+#pragma warning disable CA1416 
             using (Bitmap bitmap = Image.FromHbitmap(hBitmap))
             {
-                // Сохраняем в файл
-#pragma warning disable CA1416 // Проверка совместимости платформы
+                
+#pragma warning disable CA1416 
                 bitmap.Save(screenshotPath, ImageFormat.Jpeg);
-#pragma warning restore CA1416 // Проверка совместимости платформы
+#pragma warning restore CA1416 
             }
 
             Console.WriteLine($"[+] Скриншот сохранен: {screenshotPath}");
             Console.WriteLine($"[+] Размер: {screenWidth}x{screenHeight} пикселей");
 
-            // Открываем папку со скриншотом
+            
             Console.WriteLine("[*] Открытие папки со скриншотом...");
             Process.Start("explorer.exe", folderPath);
 
-            // Показываем файл в проводнике (опционально)
+            
             if (File.Exists(screenshotPath))
             {
                 Console.WriteLine($"[+] Размер файла: {new FileInfo(screenshotPath).Length / 1024} KB");
@@ -510,24 +510,24 @@ public class GetInfoPc
             if (hdcSrc != IntPtr.Zero) ReleaseDC(GetDesktopWindow(), hdcSrc);
         }
     }
-    // Добавьте этот метод как альтернативу
+    
     public static string TakeScreenshotWithOptions(string folderPath = null, string fileName = null)
     {
-        // Если папка не указана, используем стандартную
+        
         if (string.IsNullOrEmpty(folderPath))
         {
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             folderPath = Path.Combine(desktopPath, "SystemReport");
         }
 
-        // Если папки нет - создаем
+        
         if (!Directory.Exists(folderPath))
         {
             Directory.CreateDirectory(folderPath);
             Console.WriteLine($"[+] Папка создана: {folderPath}");
         }
 
-        // Генерируем имя файла
+        
         if (string.IsNullOrEmpty(fileName))
         {
             string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
@@ -538,7 +538,7 @@ public class GetInfoPc
 
         Console.WriteLine($"[+] Создание скриншота в: {screenshotPath}");
 
-        // Вызов основного метода создания скриншота
+        
         if (TakeScreenshotToFile(screenshotPath))
         {
             Console.WriteLine($"[✓] Скриншот успешно создан!");
@@ -552,7 +552,7 @@ public class GetInfoPc
         }
     }
 
-    // Основной метод создания скриншота
+    
     private static bool TakeScreenshotToFile(string filePath)
     {
         IntPtr hdcSrc = IntPtr.Zero;
@@ -562,30 +562,30 @@ public class GetInfoPc
 
         try
         {
-            // Получаем размеры экрана
+            
             int screenWidth = GetSystemMetrics(SM_CXSCREEN);
             int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
             Console.WriteLine($"[*] Размер экрана: {screenWidth}x{screenHeight}");
 
-            // Получаем DC для всего экрана
+            
             IntPtr desktopWindow = GetDesktopWindow();
             hdcSrc = GetWindowDC(desktopWindow);
             hdcDest = CreateCompatibleDC(hdcSrc);
             hBitmap = CreateCompatibleBitmap(hdcSrc, screenWidth, screenHeight);
             hOldBitmap = SelectObject(hdcDest, hBitmap);
 
-            // Копируем экран
+            
             BitBlt(hdcDest, 0, 0, screenWidth, screenHeight, hdcSrc, 0, 0, SRCCOPY);
 
-            // Создаем Bitmap из HBitmap
-#pragma warning disable CA1416 // Проверка совместимости платформы
+            
+#pragma warning disable CA1416 
             using (Bitmap bitmap = Image.FromHbitmap(hBitmap))
             {
-                // Сохраняем в файл
-#pragma warning disable CA1416 // Проверка совместимости платформы
+                
+#pragma warning disable CA1416 
                 bitmap.Save(filePath, ImageFormat.Jpeg);
-#pragma warning restore CA1416 // Проверка совместимости платформы
+#pragma warning restore CA1416 
             }
 
             return true;
@@ -610,7 +610,7 @@ public class GetInfoPc
 
         try
         {
-            // Показываем прогресс-бар для сбора информации
+            
             AnsiConsole.Progress()
                 .Columns(new ProgressColumn[]
                 {
@@ -624,7 +624,7 @@ public class GetInfoPc
                     var task1 = ctx.AddTask("[green]Collecting hardware info[/]");
                     var task2 = ctx.AddTask("[blue]Gathering system data[/]");
 
-                    // Симуляция сбора данных
+                    
                     for (int i = 0; i < 100; i += 10)
                     {
                         task1.Increment(10);
@@ -635,11 +635,11 @@ public class GetInfoPc
 
             Console.Clear();
 
-            // Создаем красивое дерево для отображения иерархии
+            
             var root = new Tree("[bold cyan]📊 System Information[/]");
             root.Style = new Style(Spectre.Console.Color.Yellow, null, Decoration.None);
 
-            // 1. Ветка с общей информацией
+            
             var generalNode = root.AddNode("[green]📋 General Information[/]");
             generalNode.AddNode(EscapeMarkup($"💻 Computer Name: {Environment.MachineName}"));
             generalNode.AddNode(EscapeMarkup($"👤 User Name: {Environment.UserName}"));
@@ -648,13 +648,13 @@ public class GetInfoPc
             generalNode.AddNode(EscapeMarkup($"⏱️ System Uptime: {TimeSpan.FromMilliseconds(Environment.TickCount):dd\\.hh\\:mm\\:ss}"));
             generalNode.AddNode(EscapeMarkup($"🔢 Processors: {Environment.ProcessorCount}"));
 
-            // 2. Ветка с информацией об операционной системе
+            
             var osNode = root.AddNode("[green]💿 Operating System[/]");
             osNode.AddNode(EscapeMarkup($"🏷️ OS Version: {Environment.OSVersion}"));
             osNode.AddNode(EscapeMarkup($"⚡ 64-bit OS: {(Environment.Is64BitOperatingSystem ? "Yes" : "No")}"));
             osNode.AddNode(EscapeMarkup($"🔧 64-bit Process: {(Environment.Is64BitProcess ? "Yes" : "No")}"));
 
-            // 3. Ветка с информацией о железе
+            
             var hardwareNode = root.AddNode("[green]🖥️ Hardware Information[/]");
 
             try
@@ -695,11 +695,11 @@ public class GetInfoPc
                 hardwareNode.AddNode(EscapeMarkup($"[red]RAM Error: {ex.Message}[/]"));
             }
 
-            // 4. Ветка с информацией о .NET
+            
             var dotnetNode = root.AddNode("[green]🔷 .NET Information[/]");
             dotnetNode.AddNode(EscapeMarkup($"📦 .NET Version: {Environment.Version}"));
 
-            // 5. Ветка с информацией о дисках
+            
             var storageNode = root.AddNode("[green]💾 Storage Information[/]");
             try
             {
@@ -723,21 +723,21 @@ public class GetInfoPc
                 storageNode.AddNode(EscapeMarkup($"[red]Drive Error: {ex.Message}[/]"));
             }
 
-            // Выводим дерево
+            
             AnsiConsole.Write(root);
 
-            // Разделитель
+            
             AnsiConsole.WriteLine();
             AnsiConsole.Write(new Rule("[yellow]Press any key to continue...[/]").RuleStyle("yellow").Centered());
 
-            // Ждем нажатия клавиши
+            
             Console.ReadKey();
 
-            // Показываем таблицу с дисками
+            
             Console.Clear();
             ShowDriveInfo();
 
-            // Запрос на создание отчета
+            
             if (AnsiConsole.Confirm("\n[yellow]Do you want to create a detailed report file?[/]", true))
             {
                 Main_Information_Collection();
@@ -751,15 +751,15 @@ public class GetInfoPc
         }
     }
 
-    // Вспомогательный метод для экранирования разметки
+    
     private static string EscapeMarkup(string text)
     {
         if (string.IsNullOrEmpty(text))
             return text;
 
-        // Экранируем квадратные скобки, если они не являются частью правильной разметки
-        // Простой способ: заменяем все [ на \[ и ] на \]
-        // Но оставляем уже экранированные
+        
+        
+        
         text = text.Replace("\\[", "TEMP_OPEN")
                    .Replace("\\]", "TEMP_CLOSE")
                    .Replace("[", "\\[")
@@ -770,7 +770,7 @@ public class GetInfoPc
         return text;
     }
 
-    // Вспомогательный метод для обрезки длинных строк
+    
     private static string TruncateString(string text, int maxLength)
     {
         if (string.IsNullOrEmpty(text) || text.Length <= maxLength)

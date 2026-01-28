@@ -21,7 +21,7 @@ internal class Program
                 .Centered()
                 .Color(Color.Yellow));
 
-        // Панель с информацией
+        
         var panel = new Panel("[yellow]v1.0 • Created with Spectre.Console[/]")
         {
             Border = BoxBorder.Rounded,
@@ -143,7 +143,7 @@ internal class Program
         table.AddColumn(new TableColumn("[bold]GTD / Max Memory (bytes)[/]").Centered());
         table.AddColumn(new TableColumn("[bold]GTD / Max CPU (units)[/]").Centered());
 
-        // Инициализация счетчиков производительности (работает только на Windows)
+        
         PerformanceCounter performanceCounterCpu = null;
         PerformanceCounter performanceCounterMemory = null;
 
@@ -154,7 +154,7 @@ internal class Program
                 performanceCounterCpu = new PerformanceCounter("Processor", "% Processor Time", "_Total");
                 performanceCounterMemory = new PerformanceCounter("Memory", "% Committed Bytes In Use");
 
-                // Чтобы получить актуальные значения при первом вызове
+                
                 performanceCounterCpu.NextValue();
                 performanceCounterMemory.NextValue();
                 Thread.Sleep(1000);
@@ -182,34 +182,34 @@ internal class Program
 
             if (performanceCounterCpu != null && performanceCounterMemory != null)
             {
-                // Реальные данные (только на Windows)
-#pragma warning disable CA1416 // Проверка совместимости платформы
+                
+#pragma warning disable CA1416 
                 cpuUsage = performanceCounterCpu.NextValue();
-#pragma warning restore CA1416 // Проверка совместимости платформы
-#pragma warning disable CA1416 // Проверка совместимости платформы
+#pragma warning restore CA1416 
+#pragma warning disable CA1416 
                 memoryUsagePercent = performanceCounterMemory.NextValue();
-#pragma warning restore CA1416 // Проверка совместимости платформы
+#pragma warning restore CA1416 
                 usedMemoryBytes = (long)(memoryUsagePercent / 100.0 * totalSystemMemory);
             }
             else
             {
-                // Симулированные данные для других платформ или при ошибке
+                
                 cpuUsage = rand.Next(0, 100);
                 memoryUsagePercent = rand.Next(10, 80);
                 usedMemoryBytes = (long)(memoryUsagePercent / 100.0 * totalSystemMemory);
             }
 
-            // Форматируем время
+            
             string currentTime = DateTime.Now.ToString("HH:mm:ss");
 
-            // Форматируем значения для таблицы
+            
             string cpuFormatted = $"{cpuUsage:F2} %";
             string memoryPercentFormatted = $"{memoryUsagePercent:F2} %";
             string memoryBytesFormatted = $"{usedMemoryBytes:N0}";
             string memoryMaxFormatted = $"{usedMemoryBytes:N0} / {totalSystemMemory:N0}";
             string cpuMaxFormatted = GetCpuGuaranteedMaxInfo();
 
-            // Добавляем строку в таблицу
+            
             table.AddRow(
                 currentTime,
                 cpuFormatted,
@@ -219,7 +219,7 @@ internal class Program
                 cpuMaxFormatted
             );
 
-            // Очищаем консоль и перерисовываем таблицу
+            
             Console.Clear();
             AnsiConsole.MarkupLine("[bold cyan]System Load Monitoring[/]");
 
@@ -235,10 +235,10 @@ internal class Program
             Thread.Sleep(2000);
         }
 
-        // Очищаем буфер ввода
+        
         while (Console.KeyAvailable) Console.ReadKey(true);
 
-        // Освобождаем ресурсы счетчиков
+        
         performanceCounterCpu?.Dispose();
         performanceCounterMemory?.Dispose();
     }
@@ -247,18 +247,18 @@ internal class Program
     {
         if (OperatingSystem.IsWindows())
         {
-            // Для Windows можно получить информацию через WMI
-            // Максимальное количество процессоров
+            
+            
             int maxCpu = Environment.ProcessorCount;
 
-            // Гарантированный минимум (обычно 1, но может быть настроен)
-            int guaranteedCpu = 1; // По умолчанию
+            
+            int guaranteedCpu = 1; 
 
             return $"{guaranteedCpu} / {maxCpu}";
         }
         else
         {
-            // Для Linux можно прочитать из cgroups
+            
             int maxCpu = Environment.ProcessorCount;
             int guaranteedCpu = 1;
 
@@ -272,28 +272,28 @@ internal class Program
         {
             if (OperatingSystem.IsWindows())
             {
-                // Для Windows используем GlobalMemoryStatusEx через P/Invoke
+                
                 return GetWindowsTotalMemory();
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
-                // Для Linux/Mac можно парсить /proc/meminfo или использовать sysinfo
-                // Здесь возвращаем фиктивное значение для демонстрации
-                return 16L * 1024 * 1024 * 1024; // 16 GB
+                
+                
+                return 16L * 1024 * 1024 * 1024; 
             }
             else
             {
-                return 8L * 1024 * 1024 * 1024; // 8 GB по умолчанию
+                return 8L * 1024 * 1024 * 1024; 
             }
         }
         catch
         {
-            // Возвращаем значение по умолчанию в случае ошибки
-            return 8L * 1024 * 1024 * 1024; // 8 GB
+            
+            return 8L * 1024 * 1024 * 1024; 
         }
     }
 
-    // P/Invoke для получения информации о памяти в Windows
+    
     [System.Runtime.InteropServices.DllImport("kernel32.dll")]
     [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
     static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
@@ -322,6 +322,6 @@ internal class Program
             return (long)memStatus.ullTotalPhys;
         }
 
-        return 8L * 1024 * 1024 * 1024; // 8 GB по умолчанию
+        return 8L * 1024 * 1024 * 1024; 
     }
 }

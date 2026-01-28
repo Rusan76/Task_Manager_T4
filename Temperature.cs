@@ -59,7 +59,7 @@ public class AdvancedTemperatureMonitor
         
         AnsiConsole.Write(table);
         
-        // Закрываем соединение
+        
         _computer.Close();
         Console.ReadKey();
     }

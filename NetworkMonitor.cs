@@ -9,7 +9,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console;
-using ProjectT4;
+
 namespace ProjectT4;
 
 public class NetworkMonitor
@@ -47,7 +47,7 @@ public class NetworkMonitor
         public DateTime TestTime { get; set; }
     }
 
-    // ===== ОСНОВНОЙ МЕТОД ЗАПУСКА =====
+    
     public void ShowNetworkMenu()
     {
         while (true)
@@ -111,7 +111,7 @@ public class NetworkMonitor
         }
     }
 
-    // ===== РЕАЛЬНЫЙ МОНИТОРИНГ =====
+    
     private void StartRealTimeMonitoring()
     {
         Console.Clear();
@@ -129,10 +129,10 @@ public class NetworkMonitor
         _cancellationTokenSource = new CancellationTokenSource();
         _connectionStats.Clear();
 
-        // Запускаем мониторинг в отдельной задаче
+        
         Task.Run(() => MonitorNetworkTraffic(_cancellationTokenSource.Token));
 
-        // Показываем таблицу в реальном времени
+        
         while (!Console.KeyAvailable && !_cancellationTokenSource.Token.IsCancellationRequested)
         {
             Console.Clear();
@@ -151,11 +151,11 @@ public class NetworkMonitor
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                // Получаем активные TCP соединения
+                
                 var tcpConnections = ipv4Properties.GetActiveTcpConnections();
                 UpdateConnectionStats(tcpConnections);
 
-                // Получаем статистику по интерфейсам
+                
                 UpdateInterfaceStats();
 
                 Thread.Sleep(2000);
@@ -204,8 +204,8 @@ public class NetworkMonitor
         {
             var stats = ni.GetIPv4Statistics();
 
-            // Здесь можно обновить статистику по интерфейсам
-            // Для простоты пропускаем в этом примере
+            
+            
         }
     }
 
@@ -236,7 +236,7 @@ public class NetworkMonitor
 
         AnsiConsole.Write(table);
 
-        // Показываем общую статистику
+        
         var panel = new Panel(
             $"[bold]📊 Summary[/]\n" +
             $"[green]Active processes:[/] {_connectionStats.Count}\n" +
@@ -250,7 +250,7 @@ public class NetworkMonitor
         AnsiConsole.Write(panel);
     }
 
-    // ===== АКТИВНЫЕ СОЕДИНЕНИЯ =====
+    
     private void ShowActiveConnections()
     {
         Console.Clear();
@@ -285,7 +285,7 @@ public class NetworkMonitor
 
             AnsiConsole.Write(table);
 
-            // Статистика по состояниям
+            
             var stateStats = tcpConnections
                 .GroupBy(c => c.State)
                 .Select(g => new { State = g.Key, Count = g.Count() });
@@ -294,7 +294,7 @@ public class NetworkMonitor
                 .Width(60)
                 .ShowPercentage();
 
-            // Создаем панель с заголовком для графика
+            
             var chartPanel = new Panel(
                 new BreakdownChart()
                     .Width(60)
@@ -320,14 +320,14 @@ public class NetworkMonitor
         }
     }
 
-    // ===== ТРАФИК ПО ПРОЦЕССАМ =====
+    
     private void ShowTrafficByProcess()
     {
         Console.Clear();
 
         try
         {
-            // Получаем все процессы с сетевыми соединениями
+            
             var ipv4Properties = IPGlobalProperties.GetIPGlobalProperties();
             var tcpConnections = ipv4Properties.GetActiveTcpConnections();
 
@@ -375,7 +375,7 @@ public class NetworkMonitor
         }
     }
 
-    // ===== БЛОКИРОВАННЫЕ СОЕДИНЕНИЯ =====
+    
     private void ShowBlockedConnections()
     {
         Console.Clear();
@@ -402,7 +402,7 @@ public class NetworkMonitor
 
         AnsiConsole.Write(table);
 
-        // Меню управления блокировками
+        
         var choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("Manage blocked connections:")
@@ -446,12 +446,12 @@ public class NetworkMonitor
 
             AnsiConsole.MarkupLine($"[green]✓ Connection {ip}:{port} blocked[/]");
 
-            // Здесь можно добавить реальную блокировку через Windows Firewall
-            // BlockWithFirewall(ip, port);
+            
+            
         }
     }
 
-    // ===== ТЕСТ СКОРОСТИ =====
+    
     private async Task RunSpeedTest()
     {
         Console.Clear();
@@ -478,7 +478,7 @@ public class NetworkMonitor
 
             AnsiConsole.Write(panel);
 
-            // Визуализация результатов
+            
             var chart = new BarChart()
                 .Width(60)
                 .Label("[blue]Speed (Mbps)[/]")
@@ -496,7 +496,7 @@ public class NetworkMonitor
 
     private async Task<SpeedTestResult> PerformSpeedTest()
     {
-        // Имитация теста скорости (в реальном приложении используйте библиотеки типа SpeedTest.Net)
+        
         await Task.Delay(3000);
 
         var random = new Random();
@@ -510,7 +510,7 @@ public class NetworkMonitor
         };
     }
 
-    // ===== СЕТЕВАЯ ИНФОРМАЦИЯ =====
+    
     private void ShowNetworkInfo()
     {
         Console.Clear();
@@ -554,7 +554,7 @@ public class NetworkMonitor
 
             AnsiConsole.Write(table);
 
-            // Показываем информацию о DNS
+            
             ShowDnsInfo();
         }
         catch (Exception ex)
@@ -563,12 +563,12 @@ public class NetworkMonitor
         }
     }
 
-    // ===== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ =====
+    
     private int GetProcessIdByPort(int port)
     {
         try
         {
-            // Используем netstat для получения PID по порту
+            
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -585,7 +585,7 @@ public class NetworkMonitor
             string output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
 
-            // Парсим вывод netstat
+            
             var lines = output.Split('\n');
             foreach (var line in lines)
             {
@@ -628,19 +628,19 @@ public class NetworkMonitor
         }
     }
 
-    // Остальные методы (ShowTrafficStatistics, ManageFirewallRules, ShowDnsInfo и т.д.)
+    
     private void ShowTrafficStatistics()
     {
         Console.Clear();
         AnsiConsole.MarkupLine("[bold cyan]📈 Traffic Statistics[/]");
-        // Реализация статистики...
+        
     }
 
     private void ManageFirewallRules()
     {
         Console.Clear();
         AnsiConsole.MarkupLine("[bold red]🛡️ Firewall Rules Management[/]");
-        // Реализация управления фаерволом...
+        
     }
 
     private void ShowDnsInfo()

@@ -14,7 +14,7 @@ class Process_management
         {
             Console.Clear();
             
-            // Главное меню управления процессами
+            
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("[bold cyan]PROCESS MANAGEMENT[/]")
@@ -70,7 +70,7 @@ class Process_management
         }
     }
     
-    // 1. Показать все процессы (Spectre.Console версия)
+    
     public static void ShowAllProcessesSpectre()
     {
         Console.Clear();
@@ -123,7 +123,7 @@ class Process_management
         
         AnsiConsole.Write(table);
         
-        // Статистика
+        
         var grid = new Grid()
             .AddColumn(new GridColumn().PadRight(2))
             .AddColumn(new GridColumn().PadRight(2))
@@ -141,7 +141,7 @@ class Process_management
         AnsiConsole.Write(grid);
     }
     
-    // 2. Найти процесс по имени (Spectre.Console версия)
+    
     public static void FindProcessByNameSpectre()
     {
         Console.Clear();
@@ -199,7 +199,7 @@ class Process_management
         AnsiConsole.Write(table);
     }
     
-    // 3. Завершить процесс по ID (Spectre.Console версия)
+    
     public static void KillProcessByIdSpectre()
     {
         Console.Clear();
@@ -233,7 +233,7 @@ class Process_management
         {
             AnsiConsole.MarkupLine($"[red]Error killing process: {ex.Message}[/]");
             
-            // Попробовать запустить от имени администратора
+            
             if (ex.Message.Contains("access") || ex.Message.Contains("denied"))
             {
                 AnsiConsole.MarkupLine("[yellow]Try running this program as administrator.[/]");
@@ -241,7 +241,7 @@ class Process_management
         }
     }
     
-    // 4. Завершить процесс по имени (Spectre.Console версия)
+    
     public static void KillProcessByNameSpectre()
     {
         Console.Clear();
@@ -298,7 +298,7 @@ class Process_management
         }
     }
     
-    // 5. Запустить новый процесс (Spectre.Console версия)
+    
     public static void StartNewProcessSpectre()
     {
         Console.Clear();
@@ -315,7 +315,7 @@ class Process_management
         
         try
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo
+            ProcessStartInfo startInfo = new()
             {
                 FileName = programPath,
                 Arguments = arguments,
@@ -339,7 +339,7 @@ class Process_management
         }
     }
     
-    // 6. Показать системные процессы (Spectre.Console версия)
+    
     public static void ShowSystemProcessesSpectre()
     {
         Console.Clear();
@@ -396,7 +396,7 @@ class Process_management
         AnsiConsole.MarkupLine("\n[yellow]⚠️  Warning: These are system processes. Be careful when modifying them![/]");
     }
     
-    // 7. Показать подробную информацию (Spectre.Console версия)
+    
     public static void ShowProcessInfoSpectre()
     {
         Console.Clear();
@@ -419,7 +419,7 @@ class Process_management
             
             AnsiConsole.Write(panel);
             
-            // Основная информация
+            
             var infoTable = new Table()
                 .Border(TableBorder.None)
                 .HideHeaders()
@@ -452,7 +452,7 @@ class Process_management
             
             AnsiConsole.Write(infoTable);
             
-            // Модули (если доступно)
+            
             try
             {
                 var modules = process.Modules.Cast<ProcessModule>().Take(5);
@@ -467,7 +467,7 @@ class Process_management
             }
             catch
             {
-                // Игнорируем ошибки доступа к модулям
+                
             }
         }
         catch (ArgumentException)
@@ -480,7 +480,7 @@ class Process_management
         }
     }
     
-    // 8. Экспорт процессов в файл (Spectre.Console версия)
+    
     public static void ExportProcessesToFileSpectre()
     {
         Console.Clear();
@@ -525,7 +525,7 @@ class Process_management
         }
     }
     
-    // 9. Очистка мертвых процессов (Spectre.Console версия)
+    
     public static void CleanDeadProcessesSpectre()
     {
         Console.Clear();
@@ -549,12 +549,12 @@ class Process_management
                 {
                     try
                     {
-                        // Проверяем, отвечает ли процесс
+                        
                         bool responding = proc.Responding;
                     }
                     catch
                     {
-                        // Если не можем проверить статус, пробуем завершить
+                        
                         try
                         {
                             proc.Kill();
@@ -576,7 +576,7 @@ class Process_management
         AnsiConsole.MarkupLine($"[red]Failed to clean: {failedCount}[/]");
     }
     
-    // Старые методы для совместимости (можно удалить если не нужны)
+    
     public static void ShowAllProcesses() => ShowAllProcessesSpectre();
     public static void FindProcessByName() => FindProcessByNameSpectre();
     public static void KillProcessById() => KillProcessByIdSpectre();

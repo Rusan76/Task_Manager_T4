@@ -74,7 +74,7 @@ internal class StartUpManager
             .AddColumn(new TableColumn("[cyan]Path/Value[/]").LeftAligned())
             .AddColumn(new TableColumn("[cyan]Location[/]").LeftAligned());
 
-        // Добавляем файлы из папок автозагрузки
+        
         try
         {
             string userStartup = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
@@ -85,7 +85,7 @@ internal class StartUpManager
                     table.AddRow(
                         "[green]File[/]",
                         $"[white]{Path.GetFileName(file)}[/]",
-                        $"[grey]{TruncateString(file, 40)}[/]", // ИСПРАВЛЕНО
+                        $"[grey]{TruncateString(file, 40)}[/]", 
                         "[yellow]User Startup[/]"
                     );
                 }
@@ -99,7 +99,7 @@ internal class StartUpManager
                     table.AddRow(
                         "[green]File[/]",
                         $"[white]{Path.GetFileName(file)}[/]",
-                        $"[grey]{TruncateString(file, 40)}[/]", // ИСПРАВЛЕНО
+                        $"[grey]{TruncateString(file, 40)}[/]", 
                         "[yellow]Common Startup[/]"
                     );
                 }
@@ -120,10 +120,10 @@ internal class StartUpManager
             );
         }
 
-        // Добавляем записи из реестра
+        
         try
         {
-            // HKEY_CURRENT_USER
+            
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey(
                 @"Software\Microsoft\Windows\CurrentVersion\Run"))
             {
@@ -135,14 +135,14 @@ internal class StartUpManager
                         table.AddRow(
                             "[blue]Registry[/]",
                             $"[white]{valueName}[/]",
-                            $"[grey]{TruncateString(value, 40)}[/]", // ИСПРАВЛЕНО
+                            $"[grey]{TruncateString(value, 40)}[/]", 
                             "[yellow]HKCU\\Run[/]"
                         );
                     }
                 }
             }
 
-            // HKEY_LOCAL_MACHINE
+            
             using (RegistryKey key = Registry.LocalMachine.OpenSubKey(
                 @"Software\Microsoft\Windows\CurrentVersion\Run"))
             {
@@ -154,7 +154,7 @@ internal class StartUpManager
                         table.AddRow(
                             "[blue]Registry[/]",
                             $"[white]{valueName}[/]",
-                            $"[grey]{TruncateString(value, 40)}[/]", // ИСПРАВЛЕНО
+                            $"[grey]{TruncateString(value, 40)}[/]", 
                             "[yellow]HKLM\\Run[/]"
                         );
                     }
@@ -176,7 +176,7 @@ internal class StartUpManager
 
     private void ShowStartupFolderTable()
     {
-        // Реализация метода (см. выше)
+        
         var table = new Table()
             .Title("[bold green]Startup Folder Files[/]")
             .BorderColor(Color.Yellow)
@@ -196,7 +196,7 @@ internal class StartUpManager
                     FileInfo fi = new FileInfo(file);
                     table.AddRow(
                         $"[white]{Path.GetFileName(file)}[/]",
-                        $"[grey]{TruncateString(file, 50)}[/]", // ИСПРАВЛЕНО
+                        $"[grey]{TruncateString(file, 50)}[/]", 
                         $"[yellow]{fi.Length:N0} bytes[/]",
                         $"[cyan]{fi.Extension}[/]"
                     );
@@ -211,7 +211,7 @@ internal class StartUpManager
                     FileInfo fi = new FileInfo(file);
                     table.AddRow(
                         $"[white]{Path.GetFileName(file)}[/]",
-                        $"[grey]{TruncateString(file, 50)}[/]", // ИСПРАВЛЕНО
+                        $"[grey]{TruncateString(file, 50)}[/]", 
                         $"[yellow]{fi.Length:N0} bytes[/]",
                         $"[cyan]{fi.Extension}[/]"
                     );
@@ -233,7 +233,7 @@ internal class StartUpManager
 
     private void ShowRegistryStartupTable()
     {
-        // Реализация метода (см. выше)
+        
         var table = new Table()
             .Title("[bold blue]Registry Startup Entries[/]")
             .BorderColor(Color.Blue)
@@ -254,7 +254,7 @@ internal class StartUpManager
                         string value = key.GetValue(valueName)?.ToString() ?? "";
                         table.AddRow(
                             $"[white]{valueName}[/]",
-                            $"[grey]{TruncateString(value, 60)}[/]", // ИСПРАВЛЕНО
+                            $"[grey]{TruncateString(value, 60)}[/]", 
                             "[yellow]HKCU\\...\\Run[/]"
                         );
                     }
@@ -271,7 +271,7 @@ internal class StartUpManager
                         string value = key.GetValue(valueName)?.ToString() ?? "";
                         table.AddRow(
                             $"[white]{valueName}[/]",
-                            $"[grey]{TruncateString(value, 60)}[/]", // ИСПРАВЛЕНО
+                            $"[grey]{TruncateString(value, 60)}[/]", 
                             "[yellow]HKLM\\...\\Run[/]"
                         );
                     }
@@ -342,7 +342,7 @@ internal class StartUpManager
         }
     }
 
-    // Вспомогательный метод для обрезки строк
+    
     private string TruncateString(string text, int maxLength)
     {
         if (string.IsNullOrEmpty(text) || text.Length <= maxLength)

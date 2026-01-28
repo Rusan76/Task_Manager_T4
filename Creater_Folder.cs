@@ -19,19 +19,19 @@ class CreaterFolder
         return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
     }
 
-    // Вариант 2: Папка в документах пользователя
+    
     static string GetDocumentsPath()
     {
         return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
     }
 
-    // Вариант 3: Папка в AppData
+    
     static string GetAppDataPath()
     {
         return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
     }
 
-    // Вариант 4: Папка в LocalAppData 
+    
     static string GetLocalAppDataPath()
     {
         return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -39,13 +39,13 @@ class CreaterFolder
 
     public static string CreateReportFolder(string folderName = "test001111111")
     {
-        // Выбираем место для сохранения
-        string basePath = GetDesktopPath(); // или GetDocumentsPath()
+        
+        string basePath = GetDesktopPath(); 
         string folderPath = Path.Combine(basePath, folderName);
         
         try
         {
-            // Создаем папку если ее нет
+            
             if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
@@ -62,7 +62,7 @@ class CreaterFolder
         {
             Console.WriteLine($"[ERROR] Не удалось создать папку: {ex.Message}");
             
-            // Пробуем альтернативное место если не удалось создать на рабочем столе
+            
             string fallbackPath = Path.Combine(GetLocalAppDataPath(), folderName);
             Directory.CreateDirectory(fallbackPath);
             Console.WriteLine($"[+] Папка создана в альтернативном месте: {fallbackPath}");
@@ -71,22 +71,22 @@ class CreaterFolder
         }
     }
 
-    // public static void CreaterFiles()
-    // {
-    //     try
-    //     {
-    //         string path = GetDesktopPath();
-    //         // Create the file, or overwrite if the file exists.
-    //         using (FileStream fs = File.Create(path))
-    //         {
-    //             byte[] info = new UTF8Encoding(true).GetBytes("This is some text in the file.");
-    //             // Add some information to the file.
-    //             fs.Write(info, 0, info.Length);
-    //         }
-    //     }
-    //     catch(Exception ex)
-    //     {
-    //         Console.WriteLine(ex.ToString());
-    //     }
-    // }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
