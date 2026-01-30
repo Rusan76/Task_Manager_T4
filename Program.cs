@@ -8,6 +8,12 @@ internal class Program
 {
     static void Main(string[] args)
     {
+        if (args.Length > 0 && args[0] == "--fix-keyboard")
+        {
+            Other.Keyboard.FixKeyboard();
+            return;
+        }
+        
         Console.Clear();
         Console.Title = "Task Manager T4";
 
@@ -63,7 +69,7 @@ internal class Program
                     .Title("[bold cyan]Select an option:[/]")
                     .PageSize(10)
                     .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-                    .AddChoices(new[] {
+                    .AddChoices([
                     "📊 Process Management",
                     "💻 System Information",
                     "📸 Screenshot Tool",
@@ -73,9 +79,12 @@ internal class Program
                     "⚡ Startup Manager",
                     "🌡️ Check Temperature",
                     "🔧 Service Manager", 
+                    // "Other",
+                    "Drives",
+                    // "Benchmark",
                     "🎨 OpenMe",
                     "❌ Exit"
-                    }));
+                    ]));
 
             switch (choice)
             {
@@ -115,7 +124,16 @@ internal class Program
                     break;
                 case "🔧 Service Manager": 
                     ServiceManagerUI.ShowServicesMenu();
-                    break; 
+                    break;
+                // case "Other":
+                //     Other.PrintAllOtherFunctions();
+                //     break;     
+                case "Drives":
+                    DriveManager2.Main_Menu_Drives();
+                    break;
+                // case "Benchmark":
+                //     SystemBenchmark.ShowBenchmarkMenu();
+                //     break;
                 case "🎨 OpenMe":
                     Rain.ShowReadMeWithRain();
                     break;
@@ -133,8 +151,10 @@ internal class Program
         AnsiConsole.MarkupLine("[grey]Updates every two seconds. Press any key to exit.[/]");
         AnsiConsole.WriteLine();
 
-        var table = new Table();
-        table.Border = TableBorder.Rounded;
+        var table = new Table
+        {
+            Border = TableBorder.Rounded
+        };
 
         table.AddColumn(new TableColumn("[bold]Time[/]").Centered());
         table.AddColumn(new TableColumn("[bold]CPU %[/]").Centered());
@@ -171,7 +191,7 @@ internal class Program
             AnsiConsole.MarkupLine("[yellow]Using simulated data for demonstration.[/]");
         }
 
-        Random rand = new Random();
+        Random rand = new();
         long totalSystemMemory = GetTotalSystemMemory();
 
         while (!Console.KeyAvailable)
