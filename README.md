@@ -30,13 +30,17 @@
     System.Management — для работы с WMI-запросами к системе.
 
 Инструкция по установке:
+    
     1. Для сборки проекта вам понадобится ([.NET SDK 10.0.](https://dotnet.microsoft.com/ru-ru/download/dotnet/10.0))
+    
     2. Проект требует наличия следующих NuGet-Пакетов. Установить их можно через консоль в папке проекта:
-    dotnet add package Spectre.Console
-    dotnet add package LibreHardwareMonitor.Lib
+        dotnet add package Spectre.Console
+        dotnet add package LibreHardwareMonitor.Lib
+  
     3. Сборка и запуск:
-    git clone https://github.com/Rusan76/Task_Manager_T4.git
-    cd Task_Manager_T4
-    dotnet run
+        git clone https://github.com/Rusan76/Task_Manager_T4.git
+        cd Task_Manager_T4
+        dotnet run
 
 Внимание: Для корректной работы мониторинга температуры и управления службами приложение необходимо запускать от имени администратора.        
+
