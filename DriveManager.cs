@@ -3,7 +3,7 @@ using System.Management;
 using System.Linq;
 using Spectre.Console;
 
-namespace ProjectT4;
+namespace Task_Manager_T4;
 
 class DriveManager
 {
