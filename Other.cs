@@ -627,7 +627,6 @@ public class Other
 #pragma warning disable CA1416 // Проверка совместимости платформы
             using var srch = new PrincipalSearcher(qbeUser);
 #pragma warning restore CA1416 // Проверка совместимости платформы
-
 #pragma warning disable CA1416 // Проверка совместимости платформы
             return [.. srch.FindAll()
                 .Cast<UserPrincipal>()
@@ -635,6 +634,7 @@ public class Other
                 .Where(u => !u.Equals("Administrator", StringComparison.OrdinalIgnoreCase) &&
                            !u.Equals("Guest", StringComparison.OrdinalIgnoreCase))];
 #pragma warning restore CA1416 // Проверка совместимости платформы
+
         }
 
         private static void ShowLocalGroups()

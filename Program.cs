@@ -8,6 +8,7 @@ internal class Program
 {
     static void Main(string[] args)
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         if (args.Length > 0 && args[0] == "--fix-keyboard")
         {
             Other.Keyboard.FixKeyboard();
@@ -18,7 +19,7 @@ internal class Program
         Console.Title = "Task Manager T4";
 
         AnsiConsole.Write(
-            new FigletText("System Monitor")
+            new FigletText("T4")
                 .Centered()
                 .Color(Color.Blue));
 
@@ -72,17 +73,16 @@ internal class Program
                     .AddChoices(
                     [
                         "📊 Process Management",
-                        "💻 System Information",
-                        "📸 Screenshot Tool",
-                        "🚀 Program Launcher",
-                        "🖥️ Show System Load",
-                        // "ShowNetworkMenu",
-                        "⚡ Startup Manager",
-                        "🌡️ Check Temperature",
                         "🔧 Service Manager",
-                        "Other",
-                        "Drives",
-                        "Benchmark",
+                        "⚡ Startup Manager",
+                        "💻 System Information",
+                        "⚙️ Drives",
+                        "🖥️ Show System Load",
+                        "🌡️ Check Temperature",
+                        "🔩 Benchmark",
+                        "🚀 Program Launcher",
+                        "📸 Screenshot Tool",
+                        "❔ Other",
                         "🎨 OpenMe",
                         "❌ Exit"
                     ]));
@@ -104,10 +104,6 @@ internal class Program
                 case "🖥️ Show System Load":
                     ShowSystemLoad();
                     break;
-                // case "ShowNetworkMenu":
-                //     NetworkMonitor networkMonitor = new();
-                //     networkMonitor.ShowNetworkMenu();
-                //     break;
                 case "⚡ Startup Manager":
                     try
                     {
@@ -126,13 +122,13 @@ internal class Program
                 case "🔧 Service Manager": 
                     ServiceManagerUI.ShowServicesMenu();
                     break;
-                case "Other":
+                case "❔ Other":
                     Other.PrintAllOtherFunctions();
                     break;     
-                case "Drives":
+                case "⚙️ Drives":
                     DriveManager.Main_Menu_Drives();
                     break;
-                case "Benchmark":
+                case "🔩 Benchmark":
                     SystemBenchmark.ShowBenchmarkMenu();
                     break;
                 case "🎨 OpenMe":

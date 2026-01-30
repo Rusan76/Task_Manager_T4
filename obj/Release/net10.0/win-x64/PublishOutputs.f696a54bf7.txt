@@ -1,0 +1,2 @@
+E:\001\tochno_ne_podozritelniy_exe\bin\Release\net10.0\win-x64\publish\ProjectT4.pdb
+E:\001\tochno_ne_podozritelniy_exe\bin\Release\net10.0\win-x64\publish\ProjectT4.exe

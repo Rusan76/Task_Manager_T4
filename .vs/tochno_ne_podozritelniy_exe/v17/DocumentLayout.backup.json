@@ -1,0 +1,54 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\001\\tochno_ne_podozritelniy_exe\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B9E7D686-44C7-03B9-B5E0-55FB1593D24F}|tochno_ne_podozritelniy_exe.csproj|e:\\001\\tochno_ne_podozritelniy_exe\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B9E7D686-44C7-03B9-B5E0-55FB1593D24F}|tochno_ne_podozritelniy_exe.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B9E7D686-44C7-03B9-B5E0-55FB1593D24F}|tochno_ne_podozritelniy_exe.csproj|e:\\001\\tochno_ne_podozritelniy_exe\\tochno_ne_podozritelniy_exe.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{B9E7D686-44C7-03B9-B5E0-55FB1593D24F}|tochno_ne_podozritelniy_exe.csproj|solutionrelative:tochno_ne_podozritelniy_exe.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "tochno_ne_podozritelniy_exe",
+              "DocumentMoniker": "E:\\001\\tochno_ne_podozritelniy_exe\\tochno_ne_podozritelniy_exe.csproj",
+              "RelativeDocumentMoniker": "tochno_ne_podozritelniy_exe.csproj",
+              "ToolTip": "E:\\001\\tochno_ne_podozritelniy_exe\\tochno_ne_podozritelniy_exe.csproj*",
+              "RelativeToolTip": "tochno_ne_podozritelniy_exe.csproj*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-01-16T17:19:12.047Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\001\\tochno_ne_podozritelniy_exe\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "E:\\001\\tochno_ne_podozritelniy_exe\\Program.cs*",
+              "RelativeToolTip": "Program.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-16T17:17:02.268Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

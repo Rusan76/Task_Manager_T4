@@ -13,12 +13,17 @@ class Process_management
         {
             Console.Clear();
             
+             AnsiConsole.Write(
+                new FigletText("Procces Manager")
+                    .Centered()
+                    .Color(Color.Red));
+
             
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("[bold cyan]PROCESS MANAGEMENT[/]")
                     .PageSize(10)
-                    .AddChoices(new[] {
+                    .AddChoices([
                         "📋 Show All Processes",
                         "🔍 Find Process by Name",
                         "⚡ Show System Processes",
@@ -29,7 +34,7 @@ class Process_management
                         "💾 Export Processes to File",
                         "🧹 Clean Dead Processes",
                         "🔙 Back to Main Menu"
-                    }));
+                    ]));
             
             switch (choice)
             {
@@ -94,12 +99,12 @@ class Process_management
             .AddColumn(new TableColumn("[cyan]Priority[/]").Centered())
             .AddColumn(new TableColumn("[cyan]Status[/]").Centered());
         
-        foreach (Process proc in runningProcesses.OrderBy(p => p.ProcessName).Take(100))
+        foreach (Process proc in runningProcesses.OrderBy(p => p.ProcessName))
         {
             try
             {
-                string status = proc.Responding ? "[green]✓[/]" : "[red]✗[/]";
-                string memory = $"{(proc.WorkingSet64 / 1024 / 1024):N0}";
+                string status = proc.Responding ? "[green]YES[/]" : "[red] NO[/]";
+                string memory = $"{proc.WorkingSet64 / 1024 / 1024:N0}";
                 string priority = proc.BasePriority.ToString();
                 
                 table.AddRow(
@@ -177,7 +182,7 @@ class Process_management
             try
             {
                 string status = proc.Responding ? "[green]Running[/]" : "[red]Not Responding[/]";
-                string memory = $"{(proc.WorkingSet64 / 1024 / 1024):N0}";
+                string memory = $"{proc.WorkingSet64 / 1024 / 1024:N0}";
                 
                 table.AddRow(
                     $"{proc.Id}",
@@ -367,11 +372,11 @@ class Process_management
             .AddColumn(new TableColumn("[cyan]Priority[/]"))
             .AddColumn(new TableColumn("[cyan]Memory (MB)[/]"));
         
-        foreach (Process proc in systemProcesses.Take(50))
+        foreach (Process proc in systemProcesses)
         {
             try
             {
-                string memory = $"{(proc.WorkingSet64 / 1024 / 1024):N0}";
+                string memory = $"{proc.WorkingSet64 / 1024 / 1024:N0}";
                 string priorityColor = proc.BasePriority > 12 ? "red" : "yellow";
                 
                 table.AddRow(
@@ -441,8 +446,8 @@ class Process_management
             
             try
             {
-                infoTable.AddRow("[bold]Working Memory:[/]", $"[yellow]{(process.WorkingSet64 / 1024 / 1024):N0} MB[/]");
-                infoTable.AddRow("[bold]Private Memory:[/]", $"[yellow]{(process.PrivateMemorySize64 / 1024 / 1024):N0} MB[/]");
+                infoTable.AddRow("[bold]Working Memory:[/]", $"[yellow]{process.WorkingSet64 / 1024 / 1024:N0} MB[/]");
+                infoTable.AddRow("[bold]Private Memory:[/]", $"[yellow]{process.PrivateMemorySize64 / 1024 / 1024:N0} MB[/]");
             }
             catch
             {
@@ -454,7 +459,7 @@ class Process_management
             
             try
             {
-                var modules = process.Modules.Cast<ProcessModule>().Take(5);
+                var modules = process.Modules.Cast<ProcessModule>();
                 if (modules.Any())
                 {
                     AnsiConsole.MarkupLine("\n[bold cyan]Top Modules:[/]");
@@ -507,7 +512,7 @@ class Process_management
             {
                 try
                 {
-                    sw.WriteLine($"ID: {proc.Id,-8} | Name: {proc.ProcessName,-25} | Priority: {proc.BasePriority,-3} | Memory: {(proc.WorkingSet64 / 1024 / 1024):N0} MB");
+                    sw.WriteLine($"ID: {proc.Id,-8} | Name: {proc.ProcessName,-25} | Priority: {proc.BasePriority,-3} | Memory: {proc.WorkingSet64 / 1024 / 1024:N0} MB");
                 }
                 catch
                 {

@@ -1,25 +1,41 @@
-﻿# Task_Manager_T4
+﻿Task Manager T4 — это  консольная утилита для мониторинга системы, написанная на C#. Проект объединяет функционал системного диспетчера, менеджера драйверов и инструмента для диагностики аппаратного обеспечения в одном удобном и (возможно) красивом  интерфейсе.
 
+Основные возможности:
+    Process Management — просмотр всех запущенных процессов, их ID, потребления памяти и статуса отклика.
 
+    Check Temperature — мониторинг температуры CPU (поддержка Intel 12-го поколения(А возможно и нет, ща знакомый протестирует и скажет)), GPU и накопителей (SSD/HDD) с фильтрацией технических датчиков лимитов.
 
-### Prerequisites
-- Windows 10/11 (64-bit)
-- [.NET 10.0 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)
-- Administrator privileges (for some features)
+    Drive Manager — подробная информация об установленных драйверах для видеокарт, процессоров, сетевых адаптеров и других устройств через WMI.
 
-### Clone and Build
-```bash
-# Clone the repository
-git clone https://github.com/Rusan76/Task_Manager_T4.git
-cd Task_Manager_T4
+    System Load — динамическое отслеживание загрузки CPU и оперативной памяти в реальном времени.
 
-# Restore NuGet packages
-dotnet restore
+    Service Manager — управление службами Windows: просмотр статуса, типа запуска и возможность остановки.
 
-# Build the project
-dotnet build
+    Startup Manager — контроль программ в автозагрузке Windows.
 
-# Run the application
-dotnet run
+    Benchmark — стресс-тесты производительности процессора и скорости чтения/записи оперативной памяти.
 
+    Screenshot Tool — утилита для быстрого создания снимков экрана.
 
+Технологический стек:
+
+Проект разработан с использованием современных библиотек:
+
+    .NET 10.0 — актуальная платформа для разработки.
+
+    Spectre.Console — для создания богатого визуального интерфейса, таблиц и интерактивных меню.
+
+    LibreHardwareMonitor — для доступа к низкоуровневым датчикам оборудования.
+
+    System.Management — для работы с WMI-запросами к системе.
+
+Инструкция по установке:
+    1. Для сборки проекта вам понадобится ([.NET SDK 10.0.](https://dotnet.microsoft.com/ru-ru/download/dotnet/10.0))
+    2. Проект требует наличия следующих NuGet-Пакетов. Установить их можно через консоль в папке проекта:
+        dotnet add package Spectre.Console
+        dotnet add package LibreHardwareMonitor.Lib
+    3. Сборка и запуск:
+        git clone https://github.com/Rusan76/Task_Manager_T4.git
+        cd Task_Manager_T4
+        dotnet run
+Внимание: Для корректной работы мониторинга температуры и управления службами приложение необходимо запускать от имени администратора.        

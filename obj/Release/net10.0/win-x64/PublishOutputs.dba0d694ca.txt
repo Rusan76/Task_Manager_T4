@@ -1,0 +1,2 @@
+E:\001\ProjectT4\bin\Release\net10.0\win-x64\publish\ProjectT4.pdb
+E:\001\ProjectT4\bin\Release\net10.0\win-x64\publish\ProjectT4.exe

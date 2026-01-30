@@ -166,7 +166,7 @@ public class Rain
         
         string title = @"
 ╔══════════════════════════════════════════════════════╗
-║                 SYSTEM MONITOR v1.0                  ║
+║                 SYSTEM MONITOR v1.1                  ║
 ║                    READ ME / HELP                    ║
 ╚══════════════════════════════════════════════════════╝";
 

@@ -22,7 +22,7 @@ public class ServiceManagerUI
                 new SelectionPrompt<string>()
                     .Title("[bold yellow]Service Management[/]")
                     .PageSize(12)
-                    .AddChoices(new[] {
+                    .AddChoices([
                         "📋 List All Services",
                         "⚡ List Running Services",
                         "💤 List Stopped Services",
@@ -34,7 +34,7 @@ public class ServiceManagerUI
                         "📊 Service Dependencies",
                         "📈 Service Statistics",
                         "🔙 Back to Main Menu"
-                    }));
+                    ]));
             
             switch (choice)
             {
@@ -96,7 +96,7 @@ public class ServiceManagerUI
                 .AddColumn(new TableColumn("[cyan]Can Stop[/]").Centered());
 
 #pragma warning disable CA1416 // Проверка совместимости платформы
-            foreach (var service in services.Take(50).OrderBy(s => s.ServiceName))
+            foreach (var service in services.OrderBy(s => s.ServiceName))
             {
 #pragma warning disable CA1416 // Проверка совместимости платформы
                 string status = GetStatusColor(service.Status);
@@ -105,7 +105,7 @@ public class ServiceManagerUI
                 string type = GetServiceType(service.ServiceType);
 #pragma warning restore CA1416 // Проверка совместимости платформы
 #pragma warning disable CA1416 // Проверка совместимости платформы
-                string canStop = service.CanStop ? "[green]✓[/]" : "[red]✗[/]";
+                string canStop = service.CanStop ? "[green]YES[/]" : "[red] NO[/]";
 #pragma warning restore CA1416 // Проверка совместимости платформы
 
 #pragma warning disable CA1416 // Проверка совместимости платформы
@@ -137,8 +137,7 @@ public class ServiceManagerUI
 #pragma warning disable CA1416
             var runningServices = ServiceController.GetServices()
                 .Where(s => s.Status == ServiceControllerStatus.Running)
-                .OrderBy(s => s.ServiceName)
-                .Take(50);
+                .OrderBy(s => s.ServiceName);
 #pragma warning restore CA1416
             
 #pragma warning disable CA1416 // Проверка совместимости платформы
@@ -179,8 +178,7 @@ public class ServiceManagerUI
 #pragma warning disable CA1416
             var stoppedServices = ServiceController.GetServices()
                 .Where(s => s.Status == ServiceControllerStatus.Stopped)
-                .OrderBy(s => s.ServiceName)
-                .Take(50);
+                .OrderBy(s => s.ServiceName);
 #pragma warning restore CA1416
             
 #pragma warning disable CA1416 // Проверка совместимости платформы
@@ -230,8 +228,7 @@ public class ServiceManagerUI
             var services = ServiceController.GetServices()
                 .Where(s => s.ServiceName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                            s.DisplayName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(s => s.ServiceName)
-                .Take(50);
+                .OrderBy(s => s.ServiceName);
 #pragma warning restore CA1416
             
 #pragma warning disable CA1416 // Проверка совместимости платформы
@@ -284,48 +281,46 @@ public class ServiceManagerUI
             string serviceName = AnsiConsole.Prompt(
                 new TextPrompt<string>("[green]Enter service name to view dependencies:[/]")
                     .PromptStyle("yellow"));
-            
+
 #pragma warning disable CA1416
-            using (var service = new ServiceController(serviceName))
+            using var service = new ServiceController(serviceName);
+            var table = new Table()
+                .Title($"[bold cyan]Dependencies for '{serviceName}'[/]")
+                .BorderColor(Color.Cyan)
+                .Border(TableBorder.Rounded)
+                .AddColumn(new TableColumn("[cyan]Dependent Service[/]").LeftAligned())
+                .AddColumn(new TableColumn("[cyan]Status[/]").Centered())
+                .AddColumn(new TableColumn("[cyan]Type[/]").Centered());
+
+            var dependents = service.DependentServices;
+
+            if (dependents.Length == 0)
             {
-                var table = new Table()
-                    .Title($"[bold cyan]Dependencies for '{serviceName}'[/]")
-                    .BorderColor(Color.Cyan)
-                    .Border(TableBorder.Rounded)
-                    .AddColumn(new TableColumn("[cyan]Dependent Service[/]").LeftAligned())
-                    .AddColumn(new TableColumn("[cyan]Status[/]").Centered())
-                    .AddColumn(new TableColumn("[cyan]Type[/]").Centered());
-                
-                var dependents = service.DependentServices;
-                
-                if (dependents.Length == 0)
+                AnsiConsole.MarkupLine($"[yellow]No dependent services found for '{serviceName}'.[/]");
+                return;
+            }
+
+            foreach (var dependent in dependents.OrderBy(d => d.ServiceName))
+            {
+                string status = GetStatusColor(dependent.Status);
+
+                table.AddRow(
+                    $"[white]{Ellipsis(dependent.ServiceName, 30)}[/]",
+                    status,
+                    $"[yellow]{GetServiceType(dependent.ServiceType)}[/]"
+                );
+            }
+
+            AnsiConsole.Write(table);
+
+            // Также показываем службы, от которых зависит данная служба
+            var dependencies = service.ServicesDependedOn;
+            if (dependencies.Length > 0)
+            {
+                AnsiConsole.MarkupLine("\n[bold cyan]Depends on:[/]");
+                foreach (var dep in dependencies)
                 {
-                    AnsiConsole.MarkupLine($"[yellow]No dependent services found for '{serviceName}'.[/]");
-                    return;
-                }
-                
-                foreach (var dependent in dependents.OrderBy(d => d.ServiceName))
-                {
-                    string status = GetStatusColor(dependent.Status);
-                    
-                    table.AddRow(
-                        $"[white]{Ellipsis(dependent.ServiceName, 30)}[/]",
-                        status,
-                        $"[yellow]{GetServiceType(dependent.ServiceType)}[/]"
-                    );
-                }
-                
-                AnsiConsole.Write(table);
-                
-                // Также показываем службы, от которых зависит данная служба
-                var dependencies = service.ServicesDependedOn;
-                if (dependencies.Length > 0)
-                {
-                    AnsiConsole.MarkupLine("\n[bold cyan]Depends on:[/]");
-                    foreach (var dep in dependencies)
-                    {
-                        AnsiConsole.MarkupLine($"  • [white]{dep.ServiceName}[/] - {GetStatusColor(dep.Status)}");
-                    }
+                    AnsiConsole.MarkupLine($"  • [white]{dep.ServiceName}[/] - {GetStatusColor(dep.Status)}");
                 }
             }
 #pragma warning restore CA1416
@@ -343,27 +338,25 @@ public class ServiceManagerUI
             string serviceName = AnsiConsole.Prompt(
                 new TextPrompt<string>("[green]Enter service name to start:[/]")
                     .PromptStyle("yellow"));
-            
+
 #pragma warning disable CA1416
-            using (var service = new ServiceController(serviceName))
+            using var service = new ServiceController(serviceName);
+            if (service.Status == ServiceControllerStatus.Running)
             {
-                if (service.Status == ServiceControllerStatus.Running)
-                {
-                    AnsiConsole.MarkupLine($"[yellow]Service '{serviceName}' is already running.[/]");
-                    return;
-                }
-                
-                AnsiConsole.Status()
-                    .Start($"Starting {serviceName}...", ctx =>
-                    {
-                        ctx.Spinner(Spinner.Known.Dots);
-                        ctx.SpinnerStyle(Style.Parse("green"));
-                        service.Start();
-                        service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
-                    });
-                
-                AnsiConsole.MarkupLine($"[green]✓ Service '{serviceName}' started successfully![/]");
+                AnsiConsole.MarkupLine($"[yellow]Service '{serviceName}' is already running.[/]");
+                return;
             }
+
+            AnsiConsole.Status()
+                .Start($"Starting {serviceName}...", ctx =>
+                {
+                    ctx.Spinner(Spinner.Known.Dots);
+                    ctx.SpinnerStyle(Style.Parse("green"));
+                    service.Start();
+                    service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
+                });
+
+            AnsiConsole.MarkupLine($"[green]✓ Service '{serviceName}' started successfully![/]");
 #pragma warning restore CA1416
         }
         catch (Exception ex)
@@ -379,43 +372,41 @@ public class ServiceManagerUI
             string serviceName = AnsiConsole.Prompt(
                 new TextPrompt<string>("[red]Enter service name to stop:[/]")
                     .PromptStyle("yellow"));
-            
+
 #pragma warning disable CA1416
-            using (var service = new ServiceController(serviceName))
+            using var service = new ServiceController(serviceName);
+            if (!service.CanStop)
             {
-                if (!service.CanStop)
-                {
-                    AnsiConsole.MarkupLine($"[red]Service '{serviceName}' cannot be stopped.[/]");
-                    return;
-                }
-                
-                if (service.Status == ServiceControllerStatus.Stopped)
-                {
-                    AnsiConsole.MarkupLine($"[yellow]Service '{serviceName}' is already stopped.[/]");
-                    return;
-                }
-                
-                // Предупреждение для критических служб
-                if (IsCriticalService(serviceName))
-                {
-                    if (!AnsiConsole.Confirm($"[bold red]WARNING: '{serviceName}' is a critical system service. Stop anyway?[/]", false))
-                    {
-                        AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
-                        return;
-                    }
-                }
-                
-                AnsiConsole.Status()
-                    .Start($"Stopping {serviceName}...", ctx =>
-                    {
-                        ctx.Spinner(Spinner.Known.Dots);
-                        ctx.SpinnerStyle(Style.Parse("red"));
-                        service.Stop();
-                        service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
-                    });
-                
-                AnsiConsole.MarkupLine($"[green]✓ Service '{serviceName}' stopped successfully![/]");
+                AnsiConsole.MarkupLine($"[red]Service '{serviceName}' cannot be stopped.[/]");
+                return;
             }
+
+            if (service.Status == ServiceControllerStatus.Stopped)
+            {
+                AnsiConsole.MarkupLine($"[yellow]Service '{serviceName}' is already stopped.[/]");
+                return;
+            }
+
+            // Предупреждение для критических служб
+            if (IsCriticalService(serviceName))
+            {
+                if (!AnsiConsole.Confirm($"[bold red]WARNING: '{serviceName}' is a critical system service. Stop anyway?[/]", false))
+                {
+                    AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
+                    return;
+                }
+            }
+
+            AnsiConsole.Status()
+                .Start($"Stopping {serviceName}...", ctx =>
+                {
+                    ctx.Spinner(Spinner.Known.Dots);
+                    ctx.SpinnerStyle(Style.Parse("red"));
+                    service.Stop();
+                    service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
+                });
+
+            AnsiConsole.MarkupLine($"[green]✓ Service '{serviceName}' stopped successfully![/]");
 #pragma warning restore CA1416
         }
         catch (Exception ex)
@@ -431,32 +422,30 @@ public class ServiceManagerUI
             string serviceName = AnsiConsole.Prompt(
                 new TextPrompt<string>("[yellow]Enter service name to restart:[/]")
                     .PromptStyle("yellow"));
-            
+
 #pragma warning disable CA1416
-            using (var service = new ServiceController(serviceName))
-            {
-                AnsiConsole.Progress()
-                    .Start(ctx =>
+            using var service = new ServiceController(serviceName);
+            AnsiConsole.Progress()
+                .Start(ctx =>
+                {
+                    var task1 = ctx.AddTask("[green]Stopping service...[/]");
+                    var task2 = ctx.AddTask("[blue]Starting service...[/]");
+
+                    // Останавливаем службу
+                    if (service.Status != ServiceControllerStatus.Stopped && service.CanStop)
                     {
-                        var task1 = ctx.AddTask("[green]Stopping service...[/]");
-                        var task2 = ctx.AddTask("[blue]Starting service...[/]");
-                        
-                        // Останавливаем службу
-                        if (service.Status != ServiceControllerStatus.Stopped && service.CanStop)
-                        {
-                            service.Stop();
-                            service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15));
-                        }
-                        task1.Increment(100);
-                        
-                        // Запускаем службу
-                        service.Start();
-                        service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(15));
-                        task2.Increment(100);
-                    });
-                
-                AnsiConsole.MarkupLine($"[green]✓ Service '{serviceName}' restarted successfully![/]");
-            }
+                        service.Stop();
+                        service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15));
+                    }
+                    task1.Increment(100);
+
+                    // Запускаем службу
+                    service.Start();
+                    service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(15));
+                    task2.Increment(100);
+                });
+
+            AnsiConsole.MarkupLine($"[green]✓ Service '{serviceName}' restarted successfully![/]");
 #pragma warning restore CA1416
         }
         catch (Exception ex)
@@ -602,16 +591,14 @@ public class ServiceManagerUI
         try
         {
 #pragma warning disable CA1416 // Проверка совместимости платформы
-            using (var searcher = new ManagementObjectSearcher(
-                $"SELECT StartMode FROM Win32_Service WHERE Name = '{serviceName}'"))
+            using var searcher = new ManagementObjectSearcher(
+                $"SELECT StartMode FROM Win32_Service WHERE Name = '{serviceName}'");
+#pragma warning disable CA1416 // Проверка совместимости платформы
+            foreach (ManagementObject service in searcher.Get().Cast<ManagementObject>())
             {
 #pragma warning disable CA1416 // Проверка совместимости платформы
-                foreach (ManagementObject service in searcher.Get())
-                {
-#pragma warning disable CA1416 // Проверка совместимости платформы
-                    return service["StartMode"]?.ToString() ?? "Unknown";
+                return service["StartMode"]?.ToString() ?? "Unknown";
 #pragma warning restore CA1416 // Проверка совместимости платформы
-                }
             }
         }
         catch
@@ -632,7 +619,7 @@ public class ServiceManagerUI
                 $"SELECT ProcessId FROM Win32_Service WHERE Name = '{serviceName}'"))
             {
 #pragma warning disable CA1416 // Проверка совместимости платформы
-                foreach (ManagementObject service in searcher.Get())
+                foreach (ManagementObject service in searcher.Get().Cast<ManagementObject>())
                 {
 #pragma warning disable CA1416 // Проверка совместимости платформы
                     pid = Convert.ToInt32(service["ProcessId"]);
@@ -642,12 +629,10 @@ public class ServiceManagerUI
             }
 
             if (pid == 0) return 0;
-            
+
             // Получаем информацию о процессе
-            using (var process = Process.GetProcessById(pid))
-            {
-                return process.WorkingSet64 / 1024; // Конвертируем в KB
-            }
+            using var process = Process.GetProcessById(pid);
+            return process.WorkingSet64 / 1024; // Конвертируем в KB
         }
         catch
         {
@@ -665,7 +650,7 @@ public class ServiceManagerUI
                 "SELECT StartMode FROM Win32_Service"))
             {
 #pragma warning disable CA1416 // Проверка совместимости платформы
-                foreach (ManagementObject service in searcher.Get())
+                foreach (ManagementObject service in searcher.Get().Cast<ManagementObject>())
                 {
 #pragma warning disable CA1416 // Проверка совместимости платформы
                     var startMode = service["StartMode"]?.ToString();
@@ -708,10 +693,10 @@ public class ServiceManagerUI
     
     private static bool IsCriticalService(string serviceName)
     {
-        string[] criticalServices = {
+        string[] criticalServices = [
             "lsass", "wininit", "services", "svchost", 
             "csrss", "smss", "system", "winlogon"
-        };
+        ];
         
         return criticalServices.Any(cs => 
             serviceName.Contains(cs, StringComparison.OrdinalIgnoreCase));
