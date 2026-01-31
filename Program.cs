@@ -10,62 +10,54 @@ internal class Program
     static void Main(string[] args)
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
+        Console.Title = "Task Manager T4";
+
         if (args.Length > 0 && args[0] == "--fix-keyboard")
         {
             Other.Keyboard.FixKeyboard();
             return;
         }
-        
-        Console.Clear();
-        Console.Title = "Task Manager T4";
 
-        AnsiConsole.Write(
-            new FigletText("T4")
-                .Centered()
-                .Color(Color.Blue));
-
-        AnsiConsole.Write(
-            new FigletText("Task Manager")
-                .Centered()
-                .Color(Color.Yellow));
-
-        
-        var panel = new Panel("[yellow]v1.0 • Created with Spectre.Console[/]")
+        bool keepRunning = true;
+        while (keepRunning)
         {
-            Border = BoxBorder.Rounded,
-            BorderStyle = new Style(Color.Cyan1),
-            Padding = new Padding(1, 1, 1, 1)
-        };
+            AnsiConsole.Clear();
 
-        AnsiConsole.Write(panel);
+            // 1. Красивый заголовок
+            AnsiConsole.Write(
+                new FigletText("T4 Manager")
+                    .Centered()
+                    .Color(Color.Orange1));
 
+            // 2. Создаем таблицу с инфо о системе (компактную)
+            var sysInfo = new Table()
+                .Border(TableBorder.Rounded)
+                .BorderColor(Color.Cyan1)
+                .AddColumn("Параметр")
+                .AddColumn("Значение");
 
-        var table = new Table()
-            .Centered()
-            .BorderColor(Color.Green)
-            .Border(TableBorder.Rounded)
-            .Title("[bold yellow]System Information[/]")
-            .AddColumn(new TableColumn("[cyan]Component[/]").Centered())
-            .AddColumn(new TableColumn("[cyan]Status[/]").Centered())
-            .AddRow("[green]OS[/]", $"[white]{Environment.OSVersion}[/]")
-            .AddRow("[green]User[/]", $"[white]{Environment.UserName}[/]")
-            .AddRow("[green]Machine[/]", $"[white]{Environment.MachineName}[/]")
-            .AddRow("[green]Processors[/]", $"[white]{Environment.ProcessorCount}[/]");
+            sysInfo.AddRow("[green]OS[/]", Environment.OSVersion.ToString());
+            sysInfo.AddRow("[green]User[/]", Environment.UserName);
+            sysInfo.AddRow("[green]Machine[/]", Environment.MachineName);
+            sysInfo.AddRow("[green]CPU Cores[/]", Environment.ProcessorCount.ToString());
 
-        AnsiConsole.Write(table);
-
-        AnsiConsole.Write(new Rule("[yellow]Press any key to continue[/]").RuleStyle("yellow").Centered());
-
-        Console.ReadKey();
-        Console.Clear();
-        Function_list();
+            // 3. Выводим информацию и сразу предлагаем выбор
+            AnsiConsole.Write(
+                new Panel(sysInfo)
+                    .Header("[bold yellow] System Dashboard [/]")
+                    .Expand()
+                    .BorderColor(Color.Yellow));
+            AnsiConsole.MarkupLine("[green]Press any key to continue[/]");
+            Console.ReadKey();
+            Function_list();
+        }
     }
 
     public static void Function_list()
     {
+        Console.Clear();
         while (true)
         {
-            Console.Clear();
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("[bold cyan]Select an option:[/]")
@@ -83,6 +75,7 @@ internal class Program
                         "🔩 Benchmark",
                         "🚀 Program Launcher",
                         "📸 Screenshot Tool",
+                        "File and folder manager",
                         "❔ Other",
                         "🎨 OpenMe",
                         "❌ Exit"
@@ -120,12 +113,12 @@ internal class Program
                 case "🌡️ Check Temperature":
                     AdvancedTemperatureMonitor.ShowAllTemperatures();
                     break;
-                case "🔧 Service Manager": 
+                case "🔧 Service Manager":
                     ServiceManagerUI.ShowServicesMenu();
                     break;
                 case "❔ Other":
                     Other.PrintAllOtherFunctions();
-                    break;     
+                    break;
                 case "⚙️ Drives":
                     DriveManager.Main_Menu_Drives();
                     break;
@@ -134,6 +127,9 @@ internal class Program
                     break;
                 case "🎨 OpenMe":
                     Rain.ShowReadMeWithRain();
+                    break;
+                case "File and folder manager":
+                    MainFF.PrintFunctions();
                     break;
                 case "❌ Exit":
                     Environment.Exit(0);
@@ -161,7 +157,7 @@ internal class Program
         table.AddColumn(new TableColumn("[bold]GTD / Max Memory (bytes)[/]").Centered());
         table.AddColumn(new TableColumn("[bold]GTD / Max CPU (units)[/]").Centered());
 
-        
+
         PerformanceCounter performanceCounterCpu = null;
         PerformanceCounter performanceCounterMemory = null;
 
@@ -172,7 +168,7 @@ internal class Program
                 performanceCounterCpu = new PerformanceCounter("Processor", "% Processor Time", "_Total");
                 performanceCounterMemory = new PerformanceCounter("Memory", "% Committed Bytes In Use");
 
-                
+
                 performanceCounterCpu.NextValue();
                 performanceCounterMemory.NextValue();
                 Thread.Sleep(1000);
@@ -200,8 +196,8 @@ internal class Program
 
             if (performanceCounterCpu != null && performanceCounterMemory != null)
             {
-                
-#pragma warning disable CA1416 
+
+#pragma warning disable CA1416
                 cpuUsage = performanceCounterCpu.NextValue();
 #pragma warning restore CA1416 
 #pragma warning disable CA1416 
@@ -211,23 +207,23 @@ internal class Program
             }
             else
             {
-                
+
                 cpuUsage = rand.Next(0, 100);
                 memoryUsagePercent = rand.Next(10, 80);
                 usedMemoryBytes = (long)(memoryUsagePercent / 100.0 * totalSystemMemory);
             }
 
-            
+
             string currentTime = DateTime.Now.ToString("HH:mm:ss");
 
-            
+
             string cpuFormatted = $"{cpuUsage:F2} %";
             string memoryPercentFormatted = $"{memoryUsagePercent:F2} %";
             string memoryBytesFormatted = $"{usedMemoryBytes:N0}";
             string memoryMaxFormatted = $"{usedMemoryBytes:N0} / {totalSystemMemory:N0}";
             string cpuMaxFormatted = GetCpuGuaranteedMaxInfo();
 
-            
+
             table.AddRow(
                 currentTime,
                 cpuFormatted,
@@ -237,7 +233,7 @@ internal class Program
                 cpuMaxFormatted
             );
 
-            
+
             Console.Clear();
             AnsiConsole.MarkupLine("[bold cyan]System Load Monitoring[/]");
 
@@ -253,10 +249,10 @@ internal class Program
             Thread.Sleep(2000);
         }
 
-        
+
         while (Console.KeyAvailable) Console.ReadKey(true);
 
-        
+
         performanceCounterCpu?.Dispose();
         performanceCounterMemory?.Dispose();
     }
@@ -265,18 +261,18 @@ internal class Program
     {
         if (OperatingSystem.IsWindows())
         {
-            
-            
+
+
             int maxCpu = Environment.ProcessorCount;
 
-            
-            int guaranteedCpu = 1; 
+
+            int guaranteedCpu = 1;
 
             return $"{guaranteedCpu} / {maxCpu}";
         }
         else
         {
-            
+
             int maxCpu = Environment.ProcessorCount;
             int guaranteedCpu = 1;
 
@@ -290,28 +286,28 @@ internal class Program
         {
             if (OperatingSystem.IsWindows())
             {
-                
+
                 return GetWindowsTotalMemory();
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
-                
-                
-                return 16L * 1024 * 1024 * 1024; 
+
+
+                return 16L * 1024 * 1024 * 1024;
             }
             else
             {
-                return 8L * 1024 * 1024 * 1024; 
+                return 8L * 1024 * 1024 * 1024;
             }
         }
         catch
         {
-            
-            return 8L * 1024 * 1024 * 1024; 
+
+            return 8L * 1024 * 1024 * 1024;
         }
     }
 
-    
+
     [System.Runtime.InteropServices.DllImport("kernel32.dll")]
     [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
     static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
@@ -342,6 +338,6 @@ internal class Program
             return (long)memStatus.ullTotalPhys;
         }
 
-        return 8L * 1024 * 1024 * 1024; 
+        return 8L * 1024 * 1024 * 1024;
     }
 }

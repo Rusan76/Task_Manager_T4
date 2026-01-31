@@ -2,6 +2,7 @@ namespace ProjectT4;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Spectre.Console;
 
 public class TextDisplay
 {
@@ -53,9 +54,6 @@ public class Rain
             
             Console.Clear();
             ShowReadMeInformation();
-            
-            
-            Console.WriteLine("\n\nPress any key to return to main menu...");
             Console.ReadKey(true);
         }
         finally
@@ -177,7 +175,10 @@ public class Rain
         Console.WriteLine("╔══════════════════════════════════════════════════════╗");
         Console.WriteLine("║This programm made by me =)                           ║");
         Console.WriteLine("║                                                      ║");
-        Console.WriteLine("║                                                      ║");
+        Console.WriteLine("║               Press any key to continue              ║");
         Console.WriteLine("╚══════════════════════════════════════════════════════╝");
+        Console.ReadKey();
+        Console.Clear();
+        Program.Function_list();
     }
 }
