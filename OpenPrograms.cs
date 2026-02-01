@@ -12,22 +12,13 @@ class OpenProgram
         while (true)
         {
             Console.Clear();
-            AnsiConsole.Write(
-                new FigletText("Program Launcher")
-                    .Centered()
-                    .Color(Color.Blue));
-            
-            var rule = new Rule("[bold cyan]Quick Launch System Tools[/]");
-            rule.Style = Style.Parse("cyan dim");
-            rule.Justification = Justify.Center;
-            AnsiConsole.Write(rule);
-            
+           AnsiConsole.Write(new Rule("[DarkOrange]Program Launcher[/]").RuleStyle("white").LeftJustified());
+
             var category = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("[bold yellow]Select Category:[/]")
-                    .PageSize(10)
-                    .HighlightStyle(new Style(Color.White, Color.Blue))
-                    .AddChoices(new[] {
+                    .Title("[bold white]Select Category:[/]")
+                    .PageSize(12)
+                    .AddChoices([
                         "🛠️  System Tools",
                         "⚙️  Administrative Tools", 
                         "🎛️  Control Panel",
@@ -35,7 +26,7 @@ class OpenProgram
                         "🌐 Internet & Network",
                         "📁 Custom File/Path",
                         "🔙 Back to Main Menu"
-                    }));
+                    ]));
             
             switch (category)
             {
@@ -58,6 +49,7 @@ class OpenProgram
                     OpenCustomFile();
                     break;
                 case "🔙 Back to Main Menu":
+                    Console.Clear();
                     return;
             }
         }
@@ -69,10 +61,10 @@ class OpenProgram
         
         var tool = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("[bold cyan]System Tools[/]")
-                .PageSize(15)
+                .Title("[bold DarkOrange]System Tools[/]")
+                .PageSize(12)
                 .MoreChoicesText("[grey](Move up/down to see more)[/]")
-                .AddChoices(new[] {
+                .AddChoices([
                     "💻 Command Prompt",
                     "🐚 PowerShell",
                     "🪟 Windows Terminal",
@@ -85,7 +77,7 @@ class OpenProgram
                     "📷 Camera",
                     "🎵 Media Player",
                     "🔙 Back"
-                }));
+                ]));
         
         try
         {
@@ -128,7 +120,7 @@ class OpenProgram
                     return;
             }
             
-            AnsiConsole.MarkupLine($"[green]✓ {tool.Replace("🔙 Back", "")} launched successfully![/]");
+            AnsiConsole.MarkupLine($"[white]✓ {tool.Replace("🔙 Back", "")} launched successfully![/]");
         }
         catch (Exception ex)
         {
@@ -144,9 +136,9 @@ class OpenProgram
         
         var tool = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("[bold red]Administrative Tools[/]")
-                .PageSize(15)
-                .AddChoices(new[] {
+                .Title("[bold DarkOrange]Administrative Tools[/]")
+                .PageSize(12)
+                .AddChoices([
                     "⚡ Task Manager",
                     "🔐 Registry Editor",
                     "💾 Disk Management",
@@ -161,7 +153,7 @@ class OpenProgram
                     "📋 System Configuration",
                     "💿 Disk Cleanup",
                     "🔙 Back"
-                }));
+                ]));
         
         try
         {
@@ -210,14 +202,14 @@ class OpenProgram
                     return;
             }
             
-            AnsiConsole.MarkupLine($"[green]✓ {tool.Replace("🔙 Back", "")} launched successfully![/]");
+            AnsiConsole.MarkupLine($"[white]✓ {tool.Replace("🔙 Back", "")} launched successfully![/]");
         }
         catch (Exception ex)
         {
             ShowError($"Failed to launch {tool}: {ex.Message}");
             if (ex.Message.Contains("gpedit.msc") || ex.Message.Contains("secpol.msc"))
             {
-                AnsiConsole.MarkupLine("[yellow]Note: This tool may require Windows Pro/Enterprise edition.[/]");
+                AnsiConsole.MarkupLine("[white]Note: This tool may require Windows Pro/Enterprise edition.[/]");
             }
         }
         
@@ -230,9 +222,9 @@ class OpenProgram
         
         var panelItem = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("[bold cyan]Control Panel Items[/]")
-                .PageSize(15)
-                .AddChoices(new[] {
+                .Title("[bold DarkOrange]Control Panel Items[/]")
+                .PageSize(12)
+                .AddChoices([
                     "⚙️ Control Panel",
                     "🔧 Programs & Features",
                     "🛡️ Windows Defender Firewall",
@@ -247,7 +239,7 @@ class OpenProgram
                     "🖨️ Devices & Printers",
                     "🔒 Security & Maintenance",
                     "🔙 Back"
-                }));
+                ]));
         
         try
         {
@@ -296,7 +288,7 @@ class OpenProgram
                     return;
             }
             
-            AnsiConsole.MarkupLine($"[green]✓ {panelItem.Replace("🔙 Back", "")} opened successfully![/]");
+            AnsiConsole.MarkupLine($"[white]✓ {panelItem.Replace("🔙 Back", "")} opened successfully![/]");
         }
         catch (Exception ex)
         {
@@ -312,9 +304,9 @@ class OpenProgram
         
         var tool = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("[bold green]Development Tools[/]")
-                .PageSize(15)
-                .AddChoices(new[] {
+                .Title("[bold DarkOrange]Development Tools[/]")
+                .PageSize(12)
+                .AddChoices([
                     "📦 Visual Studio Installer",
                     "🔧 Visual Studio Code",
                     "☁️ Azure Data Studio",
@@ -327,7 +319,7 @@ class OpenProgram
                     "📏 Notepad++",
                     "🔄 Git Bash",
                     "🔙 Back"
-                }));
+                ]));
         
         try
         {
@@ -375,7 +367,7 @@ class OpenProgram
         catch (Exception ex)
         {
             ShowError($"Failed to launch {tool}: {ex.Message}");
-            AnsiConsole.MarkupLine("[yellow]Note: Some tools may need to be installed first.[/]");
+            AnsiConsole.MarkupLine("[white]Note: Some tools may need to be installed first.[/]");
         }
         
         WaitForContinue();
@@ -387,9 +379,9 @@ class OpenProgram
         
         var tool = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("[bold blue]Internet & Network Tools[/]")
-                .PageSize(15)
-                .AddChoices(new[] {
+                .Title("[bold DarkOrange]Internet & Network Tools[/]")
+                .PageSize(12)
+                .AddChoices([
                     "🌐 Default Browser",
                     "🔧 Internet Properties",
                     "📡 Network Settings",
@@ -402,7 +394,7 @@ class OpenProgram
                     "💬 Microsoft Teams",
                     "📞 Skype",
                     "🔙 Back"
-                }));
+                ]));
         
         try
         {
@@ -410,18 +402,18 @@ class OpenProgram
             {
                 case "🌐 Default Browser":
                     Process.Start(new ProcessStartInfo("http://google.com") { UseShellExecute = true });
-                    AnsiConsole.MarkupLine("[green]✓ Opening default browser...[/]");
+                    AnsiConsole.MarkupLine("[white]✓ Opening default browser...[/]");
                     break;
                 case "🔧 Internet Properties":
                     RunWithAnimation("inetcpl.cpl", "", "Opening Internet Properties...");
                     break;
                 case "📡 Network Settings":
                     Process.Start(new ProcessStartInfo("ms-settings:network") { UseShellExecute = true });
-                    AnsiConsole.MarkupLine("[green]✓ Opening Network Settings...[/]");
+                    AnsiConsole.MarkupLine("[white]✓ Opening Network Settings...[/]");
                     break;
                 case "📶 Wi-Fi Settings":
                     Process.Start(new ProcessStartInfo("ms-settings:network-wifi") { UseShellExecute = true });
-                    AnsiConsole.MarkupLine("[green]✓ Opening Wi-Fi Settings...[/]");
+                    AnsiConsole.MarkupLine("[white]✓ Opening Wi-Fi Settings...[/]");
                     break;
                 case "🔄 IP Configuration":
                     RunCommandWithOutput("ipconfig", "/all");
@@ -431,23 +423,23 @@ class OpenProgram
                     break;
                 case "🔒 Windows Defender Security":
                     Process.Start(new ProcessStartInfo("windowsdefender://") { UseShellExecute = true });
-                    AnsiConsole.MarkupLine("[green]✓ Opening Windows Defender Security...[/]");
+                    AnsiConsole.MarkupLine("[white]✓ Opening Windows Defender Security...[/]");
                     break;
                 case "🔄 Windows Update":
                     Process.Start(new ProcessStartInfo("ms-settings:windowsupdate") { UseShellExecute = true });
-                    AnsiConsole.MarkupLine("[green]✓ Opening Windows Update...[/]");
+                    AnsiConsole.MarkupLine("[white]✓ Opening Windows Update...[/]");
                     break;
                 case "📧 Mail":
                     Process.Start(new ProcessStartInfo("outlookmail:") { UseShellExecute = true });
-                    AnsiConsole.MarkupLine("[green]✓ Opening Mail...[/]");
+                    AnsiConsole.MarkupLine("[white]✓ Opening Mail...[/]");
                     break;
                 case "💬 Microsoft Teams":
                     Process.Start(new ProcessStartInfo("msteams:") { UseShellExecute = true });
-                    AnsiConsole.MarkupLine("[green]✓ Opening Microsoft Teams...[/]");
+                    AnsiConsole.MarkupLine("[white]✓ Opening Microsoft Teams...[/]");
                     break;
                 case "📞 Skype":
                     Process.Start(new ProcessStartInfo("skype:") { UseShellExecute = true });
-                    AnsiConsole.MarkupLine("[green]✓ Opening Skype...[/]");
+                    AnsiConsole.MarkupLine("[white]✓ Opening Skype...[/]");
                     break;
                 case "🔙 Back":
                     return;
@@ -466,18 +458,18 @@ class OpenProgram
         Console.Clear();
         
         AnsiConsole.Write(
-            new Panel("[bold cyan]Custom File Launcher[/]")
+            new Panel("[bold DarkOrange]Custom File Launcher[/]")
                 .BorderColor(Color.Yellow)
                 .Padding(1, 1, 1, 1));
         
         var choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("[yellow]How would you like to open a file?[/]")
-                .AddChoices(new[] {
+                .Title("[white]How would you like to open a file?[/]")
+                .AddChoices([
                     "📁 Enter Full Path",
                     "🔍 Browse File",
                     "🔙 Back"
-                }));
+                ]));
         
         if (choice == "🔙 Back") return;
         
@@ -488,8 +480,8 @@ class OpenProgram
             if (choice == "📁 Enter Full Path")
             {
                 path = AnsiConsole.Prompt(
-                    new TextPrompt<string>("[green]Enter full path to file:[/]")
-                        .PromptStyle("yellow")
+                    new TextPrompt<string>("[white]Enter full path to file:[/]")
+                        .PromptStyle("DarkOrange")
                         .Validate(p =>
                         {
                             if (string.IsNullOrWhiteSpace(p))
@@ -503,9 +495,9 @@ class OpenProgram
                 if (!File.Exists(path) && !Directory.Exists(path))
                 {
 
-                    if (!AnsiConsole.Confirm($"[yellow]File/directory '{Path.GetFileName(path)}' may not exist. Continue anyway?[/]", false))
+                    if (!AnsiConsole.Confirm($"[white]File/directory '{Path.GetFileName(path)}' may not exist. Continue anyway?[/]", false))
                     {
-                        AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
+                        AnsiConsole.MarkupLine("[white]Operation cancelled.[/]");
                         WaitForContinue();
                         return;
                     }
@@ -513,7 +505,7 @@ class OpenProgram
             }
             else if (choice == "🔍 Browse File")
             {
-                AnsiConsole.MarkupLine("[yellow]Please enter path manually or drag-and-drop file here:[/]");
+                AnsiConsole.MarkupLine("[white]Please enter path manually or drag-and-drop file here:[/]");
                 path = Console.ReadLine()?.Trim('"');
                 
                 if (string.IsNullOrWhiteSpace(path))
@@ -531,7 +523,7 @@ class OpenProgram
                     .Start($"Opening {Path.GetFileName(path)}...", ctx =>
                     {
                         ctx.Spinner(Spinner.Known.Dots);
-                        ctx.SpinnerStyle(Style.Parse("green"));
+                        ctx.SpinnerStyle(Style.Parse("white"));
                         Thread.Sleep(800);
                     });
                 
@@ -540,7 +532,7 @@ class OpenProgram
                 if (exists)
                 {
                     Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-                    AnsiConsole.MarkupLine($"[green]✓ Successfully opened:[/] [yellow]{path}[/]");
+                    AnsiConsole.MarkupLine($"[DarkOrange]✓ Successfully opened:[/] [white]{path}[/]");
                 }
                 else
                 {
@@ -549,14 +541,14 @@ class OpenProgram
                     if (fileInPath != null)
                     {
                         Process.Start(fileInPath);
-                        AnsiConsole.MarkupLine($"[green]✓ Found in PATH and opened:[/] [yellow]{fileInPath}[/]");
+                        AnsiConsole.MarkupLine($"[DarkOrange]✓ Found in PATH and opened:[/] [white]{fileInPath}[/]");
                     }
                     else
                     {
                         try
                         {
                             Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-                            AnsiConsole.MarkupLine($"[green]✓ Attempting to open:[/] [yellow]{path}[/]");
+                            AnsiConsole.MarkupLine($"[DarkOrange]✓ Attempting to open:[/] [white]{path}[/]");
                         }
                         catch
                         {
@@ -580,7 +572,7 @@ class OpenProgram
             .Start(message, ctx =>
             {
                 ctx.Spinner(Spinner.Known.Dots);
-                ctx.SpinnerStyle(Style.Parse("blue"));
+                ctx.SpinnerStyle(Style.Parse("white"));
                 Thread.Sleep(800);
                 Process.Start(fileName);
             });
@@ -592,7 +584,7 @@ class OpenProgram
             .Start(message, ctx =>
             {
                 ctx.Spinner(Spinner.Known.Dots);
-                ctx.SpinnerStyle(Style.Parse("blue"));
+                ctx.SpinnerStyle(Style.Parse("white"));
                 Thread.Sleep(800);
                 Process.Start(fileName, arguments);
             });
@@ -604,7 +596,7 @@ class OpenProgram
             .Start(message, ctx =>
             {
                 ctx.Spinner(Spinner.Known.Dots);
-                ctx.SpinnerStyle(Style.Parse("blue"));
+                ctx.SpinnerStyle(Style.Parse("white"));
                 Thread.Sleep(800);
                 Process.Start(new ProcessStartInfo(fileName) { UseShellExecute = useShell });
             });
@@ -615,13 +607,13 @@ class OpenProgram
         Console.Clear();
         
         AnsiConsole.Write(
-            new Panel($"[bold cyan]{command} {arguments}[/]")
-                .BorderColor(Color.Green)
+            new Panel($"[bold white]{command} {arguments}[/]")
+                .BorderColor(Color.White)
                 .Padding(1, 1, 1, 1));
         
         try
         {
-            Process process = new Process();
+            Process process = new();
             process.StartInfo.FileName = command;
             process.StartInfo.Arguments = arguments;
             process.StartInfo.UseShellExecute = false;
@@ -635,19 +627,19 @@ class OpenProgram
             
 
             var table = new Table()
-                .BorderColor(Color.Blue)
-                .Border(TableBorder.Rounded)
+                .BorderColor(Color.White)
+                .Border(TableBorder.HeavyEdge)
                 .AddColumn(new TableColumn("[cyan]Output[/]").LeftAligned());
             
-            foreach (var line in output.Split('\n').Take(50)) 
+            foreach (var line in output.Split('\n')) 
             {
                 if (!string.IsNullOrWhiteSpace(line))
-                    table.AddRow($"[grey]{line.Trim()}[/]");
+                    table.AddRow($"[white]{line.Trim()}[/]");
             }
             
             AnsiConsole.Write(table);
             
-            AnsiConsole.MarkupLine($"[green]✓ Command executed successfully (Exit code: {process.ExitCode})[/]");
+            AnsiConsole.MarkupLine($"[white]✓ Command executed successfully (Exit code: {process.ExitCode})[/]");
         }
         catch (Exception ex)
         {
@@ -692,7 +684,7 @@ class OpenProgram
     private static void WaitForContinue()
     {
         AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine("[grey]Press any key to continue...[/]");
+        AnsiConsole.MarkupLine("[white]Press any key to continue...[/]");
         Console.ReadKey();
     }
 }

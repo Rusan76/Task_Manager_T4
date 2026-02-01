@@ -9,7 +9,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Linq;
 using Spectre.Console;
-namespace ProjectT4;
+namespace Task_Manager_T4;
 public class GetInfoPc
 {
     
@@ -54,7 +54,7 @@ public class GetInfoPc
         try
         {
 #pragma warning disable CA1416 
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher($"SELECT {classProperty} FROM {win32Class}");
+            ManagementObjectSearcher searcher = new($"SELECT {classProperty} FROM {win32Class}");
 #pragma warning restore CA1416 
 #pragma warning disable CA1416 
             foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
@@ -98,7 +98,7 @@ public class GetInfoPc
         try
         {
             
-            AnsiConsole.Write(new Rule("System Information Report"));
+            AnsiConsole.Write(new Rule("[DarkOrange]System Information report[/]").RuleStyle("white").LeftJustified());
             AnsiConsole.WriteLine();
 
             
@@ -135,7 +135,7 @@ public class GetInfoPc
                 $"GPU: [white]{gpuInfo}[/]\n" +
                 $"64-bit OS: [white]{(Environment.Is64BitOperatingSystem ? "Yes" : "No")}[/]\n" +
                 $".NET: [white]{Environment.Version}[/]")
-                .BorderColor(Spectre.Console.Color.Blue)
+                .BorderColor(Spectre.Console.Color.DarkOrange)
                 .Padding(1, 1);
 
             grid.AddRow(generalInfo, hardwareInfo);
@@ -147,13 +147,14 @@ public class GetInfoPc
 
             
             AnsiConsole.WriteLine();
-            if (AnsiConsole.Confirm("[yellow]Create detailed report file?[/]", true))
+            if (AnsiConsole.Confirm("[DarkOrange]Create detailed report file?[/]", true))
             {
                 CreateDetailedReport();
             }
 
             Console.WriteLine("\nPress any key to continue...");
             Console.ReadKey();
+            Console.Clear();
         }
         catch (Exception ex)
         {
@@ -173,7 +174,7 @@ public class GetInfoPc
             using var searcher = new ManagementObjectSearcher($"SELECT {classProperty} FROM {win32Class}");
             var result = new System.Text.StringBuilder();
 
-            foreach (ManagementObject obj in searcher.Get())
+            foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
             {
                 string value = obj[classProperty]?.ToString() ?? "";
                 
@@ -257,7 +258,7 @@ public class GetInfoPc
 
             string reportFile = Path.Combine(folderPath, $"report_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt");
 
-            using (StreamWriter sw = new StreamWriter(reportFile))
+            using (StreamWriter sw = new(reportFile))
             {
                 sw.WriteLine("=== SYSTEM REPORT ===");
                 sw.WriteLine($"Date: {DateTime.Now}");
@@ -323,7 +324,7 @@ public class GetInfoPc
             using var searcher = new ManagementObjectSearcher($"SELECT {classProperty} FROM {win32Class}");
             var result = new System.Text.StringBuilder();
 
-            foreach (ManagementObject obj in searcher.Get())
+            foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
             {
                 string value = obj[classProperty]?.ToString() ?? "";
                 if (!string.IsNullOrEmpty(value))
@@ -573,15 +574,14 @@ public class GetInfoPc
             
             BitBlt(hdcDest, 0, 0, screenWidth, screenHeight, hdcSrc, 0, 0, SRCCOPY);
 
-            
-#pragma warning disable CA1416 
-            using (Bitmap bitmap = Image.FromHbitmap(hBitmap))
-            {
-                
-#pragma warning disable CA1416 
-                bitmap.Save(filePath, ImageFormat.Jpeg);
-#pragma warning restore CA1416 
-            }
+
+#pragma warning disable CA1416
+            using Bitmap bitmap = Image.FromHbitmap(hBitmap);
+
+#pragma warning disable CA1416
+            bitmap.Save(filePath, ImageFormat.Jpeg);
+#pragma warning restore CA1416
+
 
             return true;
         }
@@ -607,13 +607,13 @@ public class GetInfoPc
         {
             
             AnsiConsole.Progress()
-                .Columns(new ProgressColumn[]
-                {
+                .Columns(
+                [
                 new TaskDescriptionColumn(),
                 new ProgressBarColumn(),
                 new PercentageColumn(),
                 new SpinnerColumn()
-                })
+                ])
                 .Start(ctx =>
                 {
                     var task1 = ctx.AddTask("[green]Collecting hardware info[/]");
@@ -630,12 +630,16 @@ public class GetInfoPc
 
             Console.Clear();
 
-            
-            var root = new Tree("[bold cyan]📊 System Information[/]");
-            root.Style = new Style(Spectre.Console.Color.Yellow, null, Decoration.None);
 
-            
-            var generalNode = root.AddNode("[green]📋 General Information[/]");
+
+            var root = new Tree("[bold white]📊 System Information[/]")
+            {
+                Style = new Style(Spectre.Console.Color.DarkOrange, null, Decoration.None)
+            };
+
+
+
+            var generalNode = root.AddNode("[DarkOrange]📋 General Information[/]");
             generalNode.AddNode(EscapeMarkup($"💻 Computer Name: {Environment.MachineName}"));
             generalNode.AddNode(EscapeMarkup($"👤 User Name: {Environment.UserName}"));
             generalNode.AddNode(EscapeMarkup($"🏢 Domain: {Environment.UserDomainName}"));
@@ -644,13 +648,13 @@ public class GetInfoPc
             generalNode.AddNode(EscapeMarkup($"🔢 Processors: {Environment.ProcessorCount}"));
 
             
-            var osNode = root.AddNode("[green]💿 Operating System[/]");
+            var osNode = root.AddNode("[DarkOrange]💿 Operating System[/]");
             osNode.AddNode(EscapeMarkup($"🏷️ OS Version: {Environment.OSVersion}"));
             osNode.AddNode(EscapeMarkup($"⚡ 64-bit OS: {(Environment.Is64BitOperatingSystem ? "Yes" : "No")}"));
             osNode.AddNode(EscapeMarkup($"🔧 64-bit Process: {(Environment.Is64BitProcess ? "Yes" : "No")}"));
 
             
-            var hardwareNode = root.AddNode("[green]🖥️ Hardware Information[/]");
+            var hardwareNode = root.AddNode("[DarkOrange]🖥️ Hardware Information[/]");
 
             try
             {
@@ -691,11 +695,11 @@ public class GetInfoPc
             }
 
             
-            var dotnetNode = root.AddNode("[green]🔷 .NET Information[/]");
+            var dotnetNode = root.AddNode("[DarkOrange]🔷 .NET Information[/]");
             dotnetNode.AddNode(EscapeMarkup($"📦 .NET Version: {Environment.Version}"));
 
             
-            var storageNode = root.AddNode("[green]💾 Storage Information[/]");
+            var storageNode = root.AddNode("[DarkOrange]💾 Storage Information[/]");
             try
             {
                 var drives = DriveInfo.GetDrives().Where(d => d.IsReady).Take(5);
@@ -710,7 +714,7 @@ public class GetInfoPc
                     storageNode.AddNode(EscapeMarkup(
                         $"{drive.Name} {drive.VolumeLabel} | " +
                         $"[{statusColor}]{usedPercent:F1}% used[/] | " +
-                        $"[blue]{freeGB:F1} GB free of {totalGB:F1} GB[/]"));
+                        $"[DarkOrange]{freeGB:F1} GB free of {totalGB:F1} GB[/]"));
                 }
             }
             catch (Exception ex)
@@ -771,14 +775,14 @@ public class GetInfoPc
         if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
             return text;
 
-        return text.Substring(0, maxLength - 3) + "...";
+        return text[..(maxLength - 3)] + "...";
     }
     public static void ShowDriveInfo()
     {
         var drives = DriveInfo.GetDrives().Where(d => d.IsReady);
 
         var table = new Table()
-            .Title("[bold yellow]Storage Drives[/]")
+            .Title("[bold DarkOrange]Storage Drives[/]")
             .Border(TableBorder.Rounded)
             .AddColumn(new TableColumn("[cyan]Drive[/]").Centered())
             .AddColumn(new TableColumn("[cyan]Label[/]").LeftAligned())

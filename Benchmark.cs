@@ -3,14 +3,14 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Spectre.Console;
 
-namespace ProjectT4;
+namespace Task_Manager_T4;
 
 class SystemBenchmark
 {
     public static void ShowBenchmarkMenu()
     {
         AnsiConsole.Clear();
-        AnsiConsole.Write(new Rule("[red]System Performance Benchmark[/]").RuleStyle("red"));
+        AnsiConsole.Write(new Rule("[DarkOrange]System Performance Benchmark[/]").RuleStyle("white").LeftJustified());
 
         var choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
@@ -24,7 +24,7 @@ class SystemBenchmark
 
     private static void RunCpuBenchmark()
     {
-        AnsiConsole.MarkupLine("[yellow]Запуск теста CPU... Все ядра будут нагружены на 5 секунд.[/]");
+        AnsiConsole.MarkupLine("[white]Запуск теста CPU... Все ядра будут нагружены на 5 секунд.[/]");
         
         Stopwatch sw = Stopwatch.StartNew();
         long operations = 0;
@@ -49,9 +49,9 @@ class SystemBenchmark
             });
 
         sw.Stop();
-        AnsiConsole.MarkupLine($"[green]Тест завершен![/]");
+        AnsiConsole.MarkupLine($"[DarkOrange]Тест завершен![/]");
         AnsiConsole.MarkupLine($"Выполнено математических операций: [bold]{operations:N0}[/]");
-        AnsiConsole.MarkupLine($"Относительный балл (Ops/sec): [bold cyan]{operations / 5:N0}[/]");
+        AnsiConsole.MarkupLine($"Относительный балл (Ops/sec): [bold ]{operations / 5:N0}[/]");
         AnsiConsole.MarkupLine("Press any key to return.");
         Console.ReadLine();
         ShowBenchmarkMenu();
@@ -59,7 +59,7 @@ class SystemBenchmark
 
     private static void RunRamBenchmark()
     {
-        AnsiConsole.MarkupLine("[yellow]Запуск теста RAM (Запись/Чтение 1 ГБ)...[/]");
+        AnsiConsole.MarkupLine("[DarkOrange]Запуск теста RAM (Запись/Чтение 1 ГБ)...[/]");
 
         const int size = 1024 * 1024 * 256; 
         int[] array = new int[size];
@@ -74,7 +74,7 @@ class SystemBenchmark
             });
 
         double writeSpeed = (1024.0) / sw.Elapsed.TotalSeconds; 
-        AnsiConsole.MarkupLine($"Скорость записи: [bold green]{writeSpeed:F2} MB/s[/]");
+        AnsiConsole.MarkupLine($"Скорость записи: [bold DarkOrange]{writeSpeed:F2} MB/s[/]");
 
         sw.Restart();
         AnsiConsole.Status()
@@ -85,8 +85,8 @@ class SystemBenchmark
                 sw.Stop();
             });
 
-        double readSpeed = (1024.0) / sw.Elapsed.TotalSeconds;
-        AnsiConsole.MarkupLine($"Скорость чтения: [bold green]{readSpeed:F2} MB/s[/]");
+        double readSpeed = 1024.0 / sw.Elapsed.TotalSeconds;
+        AnsiConsole.MarkupLine($"Скорость чтения: [bold ]{readSpeed:F2} MB/s[/]");
         
         
         array = null;

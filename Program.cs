@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Spectre.Console;
 using ProjectT4;
 using Task_Manager_T4;
+using System.IO;
 
 internal class Program
 {
@@ -17,37 +18,41 @@ internal class Program
             Other.Keyboard.FixKeyboard();
             return;
         }
-
+        string fontPath = Path.Combine(AppContext.BaseDirectory, "resources", "fonts", "Speed.flf");
         bool keepRunning = true;
         while (keepRunning)
         {
             AnsiConsole.Clear();
 
-            // 1. Красивый заголовок
-            AnsiConsole.Write(
-                new FigletText("T4 Manager")
-                    .Centered()
-                    .Color(Color.Orange1));
-
-            // 2. Создаем таблицу с инфо о системе (компактную)
+            if (File.Exists(fontPath))
+            {
+                var font = FigletFont.Load(fontPath);
+                AnsiConsole.Write(
+                    new FigletText(font, "tm T4")
+                        .Centered()
+                        .Color(Color.Orange1));
+            }
+            else
+            {
+                AnsiConsole.Write(new FigletText("tm T4").Centered().Color(Color.Orange1));
+            }
             var sysInfo = new Table()
-                .Border(TableBorder.Rounded)
-                .BorderColor(Color.Cyan1)
+                .Border(TableBorder.HeavyEdge)
+                .BorderColor(Color.Orange1)
                 .AddColumn("Параметр")
                 .AddColumn("Значение");
 
-            sysInfo.AddRow("[green]OS[/]", Environment.OSVersion.ToString());
-            sysInfo.AddRow("[green]User[/]", Environment.UserName);
-            sysInfo.AddRow("[green]Machine[/]", Environment.MachineName);
-            sysInfo.AddRow("[green]CPU Cores[/]", Environment.ProcessorCount.ToString());
+            sysInfo.AddRow("[orange1]OS[/]", Environment.OSVersion.ToString());
+            sysInfo.AddRow("[orange1]User[/]", Environment.UserName);
+            sysInfo.AddRow("[orange1]Machine[/]", Environment.MachineName);
+            sysInfo.AddRow("[orange1]CPU Cores[/]", Environment.ProcessorCount.ToString());
 
-            // 3. Выводим информацию и сразу предлагаем выбор
             AnsiConsole.Write(
                 new Panel(sysInfo)
-                    .Header("[bold yellow] System Dashboard [/]")
+                    .Header("[bold white] System Dashboard [/]")
                     .Expand()
-                    .BorderColor(Color.Yellow));
-            AnsiConsole.MarkupLine("[green]Press any key to continue[/]");
+                    .BorderColor(Color.White));
+            AnsiConsole.Write(new Rule("[white]V1.2 Press any key to continue[/]").RuleStyle("orange1"));
             Console.ReadKey();
             Function_list();
         }
@@ -60,9 +65,9 @@ internal class Program
         {
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("[bold cyan]Select an option:[/]")
-                    .PageSize(10)
-                    .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
+                    .Title("[bold DarkOrange]Select an option:[/]")
+                    .PageSize(12)
+                    .MoreChoicesText("[white](Move up and down to reveal more options)[/]")
                     .AddChoices(
                     [
                         "📊 Process Management",
@@ -97,12 +102,13 @@ internal class Program
                     break;
                 case "🖥️ Show System Load":
                     ShowSystemLoad();
+                    Console.Clear();
                     break;
                 case "⚡ Startup Manager":
                     try
                     {
                         StartUpManager startupManager = new();
-                        startupManager.ShowStartupManagerUI();
+                        StartUpManager.ShowStartupManagerUI();
                     }
                     catch (Exception ex)
                     {
@@ -112,12 +118,14 @@ internal class Program
                     break;
                 case "🌡️ Check Temperature":
                     AdvancedTemperatureMonitor.ShowAllTemperatures();
+                    Console.Clear();
                     break;
                 case "🔧 Service Manager":
                     ServiceManagerUI.ShowServicesMenu();
                     break;
                 case "❔ Other":
                     Other.PrintAllOtherFunctions();
+                    Console.Clear();
                     break;
                 case "⚙️ Drives":
                     DriveManager.Main_Menu_Drives();
@@ -127,8 +135,10 @@ internal class Program
                     break;
                 case "🎨 OpenMe":
                     Rain.ShowReadMeWithRain();
+                    Console.Clear();
                     break;
                 case "File and folder manager":
+                    Console.Clear();
                     MainFF.PrintFunctions();
                     break;
                 case "❌ Exit":
@@ -141,8 +151,8 @@ internal class Program
     private static void ShowSystemLoad()
     {
         Console.Clear();
-        AnsiConsole.MarkupLine("[bold cyan]System Load Monitoring[/]");
-        AnsiConsole.MarkupLine("[grey]Updates every two seconds. Press any key to exit.[/]");
+        AnsiConsole.MarkupLine("[bold DarkOrange]System Load Monitoring[/]");
+        AnsiConsole.MarkupLine("[white]Updates every two seconds. Press any key to exit.[/]");
         AnsiConsole.WriteLine();
 
         var table = new Table
@@ -235,14 +245,14 @@ internal class Program
 
 
             Console.Clear();
-            AnsiConsole.MarkupLine("[bold cyan]System Load Monitoring[/]");
+            AnsiConsole.MarkupLine("[bold DarkOrange]System Load Monitoring[/]");
 
             if (performanceCounterCpu == null || performanceCounterMemory == null)
             {
                 AnsiConsole.MarkupLine("[yellow]⚠ Using simulated data[/]");
             }
 
-            AnsiConsole.MarkupLine("[grey]Updates every two seconds. Press any key to exit.[/]");
+            AnsiConsole.MarkupLine("[white]Updates every two seconds. Press any key to exit.[/]");
             AnsiConsole.WriteLine();
             AnsiConsole.Write(table);
 

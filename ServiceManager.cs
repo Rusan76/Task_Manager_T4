@@ -13,14 +13,10 @@ public class ServiceManagerUI
         {
             Console.Clear();
             
-            AnsiConsole.Write(
-                new FigletText("Service Manager")
-                    .Centered()
-                    .Color(Color.Red));
-            
+            AnsiConsole.Write(new Rule("[DarkOrange]Service Manager[/]").RuleStyle("white").LeftJustified());
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("[bold yellow]Service Management[/]")
+                    .Title("[bold white]Select category[/]")
                     .PageSize(12)
                     .AddChoices([
                         "📋 List All Services",
@@ -69,10 +65,11 @@ public class ServiceManagerUI
                     ShowServiceStatistics();
                     break;
                 case "🔙 Back to Main Menu":
+                    Console.Clear();
                     return;
             }
             
-            AnsiConsole.MarkupLine("\n[grey]Press any key to continue...[/]");
+            AnsiConsole.MarkupLine("\n[white]Press any key to continue...[/]");
             Console.ReadKey();
         }
     }
@@ -86,14 +83,14 @@ public class ServiceManagerUI
 #pragma warning restore CA1416
             
             var table = new Table()
-                .Title($"[bold red]Windows Services ({services.Length})[/]")
-                .BorderColor(Color.Red)
+                .Title($"[bold white]Windows Services ({services.Length})[/]")
+                .BorderColor(Color.DarkOrange)
                 .Border(TableBorder.Rounded)
-                .AddColumn(new TableColumn("[cyan]Name[/]").LeftAligned())
-                .AddColumn(new TableColumn("[cyan]Display Name[/]").LeftAligned())
-                .AddColumn(new TableColumn("[cyan]Status[/]").Centered())
-                .AddColumn(new TableColumn("[cyan]Type[/]").Centered())
-                .AddColumn(new TableColumn("[cyan]Can Stop[/]").Centered());
+                .AddColumn(new TableColumn("[white]Name[/]").LeftAligned())
+                .AddColumn(new TableColumn("[white]Display Name[/]").LeftAligned())
+                .AddColumn(new TableColumn("[white]Status[/]").Centered())
+                .AddColumn(new TableColumn("[white]Type[/]").Centered())
+                .AddColumn(new TableColumn("[white]Can Stop[/]").Centered());
 
 #pragma warning disable CA1416 // Проверка совместимости платформы
             foreach (var service in services.OrderBy(s => s.ServiceName))
@@ -111,9 +108,9 @@ public class ServiceManagerUI
 #pragma warning disable CA1416 // Проверка совместимости платформы
                 table.AddRow(
                     $"[white]{Ellipsis(service.ServiceName, 20)}[/]",
-                    $"[grey]{Ellipsis(service.DisplayName, 30)}[/]",
+                    $"[white]{Ellipsis(service.DisplayName, 30)}[/]",
                     status,
-                    $"[yellow]{type}[/]",
+                    $"[white]{type}[/]",
                     canStop
                 );
 #pragma warning restore CA1416 // Проверка совместимости платформы
@@ -142,13 +139,13 @@ public class ServiceManagerUI
             
 #pragma warning disable CA1416 // Проверка совместимости платформы
             var table = new Table()
-                .Title($"[bold green]Running Services ({runningServices.Count()})[/]")
-                .BorderColor(Color.Green)
+                .Title($"[bold white]Running Services ({runningServices.Count()})[/]")
+                .BorderColor(Color.DarkOrange)
                 .Border(TableBorder.Rounded)
-                .AddColumn(new TableColumn("[cyan]Name[/]").LeftAligned())
-                .AddColumn(new TableColumn("[cyan]Display Name[/]").LeftAligned())
-                .AddColumn(new TableColumn("[cyan]Startup Type[/]").Centered())
-                .AddColumn(new TableColumn("[cyan]Memory[/]").RightAligned());
+                .AddColumn(new TableColumn("[white]Name[/]").LeftAligned())
+                .AddColumn(new TableColumn("[white]Display Name[/]").LeftAligned())
+                .AddColumn(new TableColumn("[white]Startup Type[/]").Centered())
+                .AddColumn(new TableColumn("[white]Memory[/]").RightAligned());
 #pragma warning restore CA1416 // Проверка совместимости платформы
             
             foreach (var service in runningServices)
@@ -156,9 +153,9 @@ public class ServiceManagerUI
 #pragma warning disable CA1416 // Проверка совместимости платформы
                 table.AddRow(
                     $"[white]{Ellipsis(service.ServiceName, 20)}[/]",
-                    $"[grey]{Ellipsis(service.DisplayName, 30)}[/]",
-                    $"[yellow]{GetStartupType(service.ServiceName)}[/]",
-                    $"[cyan]{GetServiceMemoryUsage(service.ServiceName):N0} KB[/]"
+                    $"[white]{Ellipsis(service.DisplayName, 30)}[/]",
+                    $"[white]{GetStartupType(service.ServiceName)}[/]",
+                    $"[white]{GetServiceMemoryUsage(service.ServiceName):N0} KB[/]"
                 );
 #pragma warning restore CA1416 // Проверка совместимости платформы
             }
@@ -183,13 +180,13 @@ public class ServiceManagerUI
             
 #pragma warning disable CA1416 // Проверка совместимости платформы
             var table = new Table()
-                .Title($"[bold red]Stopped Services ({stoppedServices.Count()})[/]")
-                .BorderColor(Color.Red)
+                .Title($"[bold white]Stopped Services ({stoppedServices.Count()})[/]")
+                .BorderColor(Color.DarkOrange)
                 .Border(TableBorder.Rounded)
-                .AddColumn(new TableColumn("[cyan]Name[/]").LeftAligned())
-                .AddColumn(new TableColumn("[cyan]Display Name[/]").LeftAligned())
-                .AddColumn(new TableColumn("[cyan]Startup Type[/]").Centered())
-                .AddColumn(new TableColumn("[cyan]Can Start[/]").Centered());
+                .AddColumn(new TableColumn("[white]Name[/]").LeftAligned())
+                .AddColumn(new TableColumn("[white]Display Name[/]").LeftAligned())
+                .AddColumn(new TableColumn("[white]Startup Type[/]").Centered())
+                .AddColumn(new TableColumn("[white]Can Start[/]").Centered());
 #pragma warning restore CA1416 // Проверка совместимости платформы
             
             foreach (var service in stoppedServices)
@@ -201,8 +198,8 @@ public class ServiceManagerUI
 #pragma warning disable CA1416 // Проверка совместимости платформы
                 table.AddRow(
                     $"[white]{Ellipsis(service.ServiceName, 20)}[/]",
-                    $"[grey]{Ellipsis(service.DisplayName, 30)}[/]",
-                    $"[yellow]{GetStartupType(service.ServiceName)}[/]",
+                    $"[white]{Ellipsis(service.DisplayName, 30)}[/]",
+                    $"[white]{GetStartupType(service.ServiceName)}[/]",
                     canStart
                 );
 #pragma warning restore CA1416 // Проверка совместимости платформы
@@ -221,8 +218,8 @@ public class ServiceManagerUI
         try
         {
             string searchTerm = AnsiConsole.Prompt(
-                new TextPrompt<string>("[green]Enter service name or display name to search:[/]")
-                    .PromptStyle("yellow"));
+                new TextPrompt<string>("[white]Enter service name or display name to search:[/]")
+                    .PromptStyle("DarkOrange"));
             
 #pragma warning disable CA1416
             var services = ServiceController.GetServices()
@@ -234,20 +231,20 @@ public class ServiceManagerUI
 #pragma warning disable CA1416 // Проверка совместимости платформы
             if (!services.Any())
             {
-                AnsiConsole.MarkupLine($"[yellow]No services found matching '{searchTerm}'.[/]");
+                AnsiConsole.MarkupLine($"[DarkOrange]No services found matching '{searchTerm}'.[/]");
                 return;
             }
 #pragma warning restore CA1416 // Проверка совместимости платформы
             
 #pragma warning disable CA1416 // Проверка совместимости платформы
             var table = new Table()
-                .Title($"[bold blue]Search Results: '{searchTerm}' ({services.Count()})[/]")
-                .BorderColor(Color.Blue)
+                .Title($"[bold white]Search Results: '{searchTerm}' ({services.Count()})[/]")
+                .BorderColor(Color.DarkOrange)
                 .Border(TableBorder.Rounded)
-                .AddColumn(new TableColumn("[cyan]Name[/]").LeftAligned())
-                .AddColumn(new TableColumn("[cyan]Display Name[/]").LeftAligned())
-                .AddColumn(new TableColumn("[cyan]Status[/]").Centered())
-                .AddColumn(new TableColumn("[cyan]Startup Type[/]").Centered());
+                .AddColumn(new TableColumn("[white]Name[/]").LeftAligned())
+                .AddColumn(new TableColumn("[white]Display Name[/]").LeftAligned())
+                .AddColumn(new TableColumn("[white]Status[/]").Centered())
+                .AddColumn(new TableColumn("[white]Startup Type[/]").Centered());
 #pragma warning restore CA1416 // Проверка совместимости платформы
             
             foreach (var service in services)
@@ -259,9 +256,9 @@ public class ServiceManagerUI
 #pragma warning disable CA1416 // Проверка совместимости платформы
                 table.AddRow(
                     $"[white]{Ellipsis(service.ServiceName, 20)}[/]",
-                    $"[grey]{Ellipsis(service.DisplayName, 30)}[/]",
+                    $"[white]{Ellipsis(service.DisplayName, 30)}[/]",
                     status,
-                    $"[yellow]{GetStartupType(service.ServiceName)}[/]"
+                    $"[white]{GetStartupType(service.ServiceName)}[/]"
                 );
 #pragma warning restore CA1416 // Проверка совместимости платформы
             }
@@ -279,24 +276,24 @@ public class ServiceManagerUI
         try
         {
             string serviceName = AnsiConsole.Prompt(
-                new TextPrompt<string>("[green]Enter service name to view dependencies:[/]")
-                    .PromptStyle("yellow"));
+                new TextPrompt<string>("[white]Enter service name to view dependencies:[/]")
+                    .PromptStyle("DarkOrange"));
 
 #pragma warning disable CA1416
             using var service = new ServiceController(serviceName);
             var table = new Table()
-                .Title($"[bold cyan]Dependencies for '{serviceName}'[/]")
+                .Title($"[bold white]Dependencies for '{serviceName}'[/]")
                 .BorderColor(Color.Cyan)
                 .Border(TableBorder.Rounded)
-                .AddColumn(new TableColumn("[cyan]Dependent Service[/]").LeftAligned())
-                .AddColumn(new TableColumn("[cyan]Status[/]").Centered())
-                .AddColumn(new TableColumn("[cyan]Type[/]").Centered());
+                .AddColumn(new TableColumn("[white]Dependent Service[/]").LeftAligned())
+                .AddColumn(new TableColumn("[white]Status[/]").Centered())
+                .AddColumn(new TableColumn("[white]Type[/]").Centered());
 
             var dependents = service.DependentServices;
 
             if (dependents.Length == 0)
             {
-                AnsiConsole.MarkupLine($"[yellow]No dependent services found for '{serviceName}'.[/]");
+                AnsiConsole.MarkupLine($"[DarkOrange]No dependent services found for '{serviceName}'.[/]");
                 return;
             }
 
@@ -307,7 +304,7 @@ public class ServiceManagerUI
                 table.AddRow(
                     $"[white]{Ellipsis(dependent.ServiceName, 30)}[/]",
                     status,
-                    $"[yellow]{GetServiceType(dependent.ServiceType)}[/]"
+                    $"[white]{GetServiceType(dependent.ServiceType)}[/]"
                 );
             }
 
@@ -317,7 +314,7 @@ public class ServiceManagerUI
             var dependencies = service.ServicesDependedOn;
             if (dependencies.Length > 0)
             {
-                AnsiConsole.MarkupLine("\n[bold cyan]Depends on:[/]");
+                AnsiConsole.MarkupLine("\n[bold white]Depends on:[/]");
                 foreach (var dep in dependencies)
                 {
                     AnsiConsole.MarkupLine($"  • [white]{dep.ServiceName}[/] - {GetStatusColor(dep.Status)}");
@@ -336,14 +333,14 @@ public class ServiceManagerUI
         try
         {
             string serviceName = AnsiConsole.Prompt(
-                new TextPrompt<string>("[green]Enter service name to start:[/]")
-                    .PromptStyle("yellow"));
+                new TextPrompt<string>("[white]Enter service name to start:[/]")
+                    .PromptStyle("DarkOrange"));
 
 #pragma warning disable CA1416
             using var service = new ServiceController(serviceName);
             if (service.Status == ServiceControllerStatus.Running)
             {
-                AnsiConsole.MarkupLine($"[yellow]Service '{serviceName}' is already running.[/]");
+                AnsiConsole.MarkupLine($"[DarkOrange]Service '{serviceName}' is already running.[/]");
                 return;
             }
 
@@ -351,12 +348,12 @@ public class ServiceManagerUI
                 .Start($"Starting {serviceName}...", ctx =>
                 {
                     ctx.Spinner(Spinner.Known.Dots);
-                    ctx.SpinnerStyle(Style.Parse("green"));
+                    ctx.SpinnerStyle(Style.Parse("white"));
                     service.Start();
                     service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
                 });
 
-            AnsiConsole.MarkupLine($"[green]✓ Service '{serviceName}' started successfully![/]");
+            AnsiConsole.MarkupLine($"[white]✓ Service '{serviceName}' started successfully![/]");
 #pragma warning restore CA1416
         }
         catch (Exception ex)
@@ -370,8 +367,8 @@ public class ServiceManagerUI
         try
         {
             string serviceName = AnsiConsole.Prompt(
-                new TextPrompt<string>("[red]Enter service name to stop:[/]")
-                    .PromptStyle("yellow"));
+                new TextPrompt<string>("[white]Enter service name to stop:[/]")
+                    .PromptStyle("DarkOrange"));
 
 #pragma warning disable CA1416
             using var service = new ServiceController(serviceName);
@@ -383,7 +380,7 @@ public class ServiceManagerUI
 
             if (service.Status == ServiceControllerStatus.Stopped)
             {
-                AnsiConsole.MarkupLine($"[yellow]Service '{serviceName}' is already stopped.[/]");
+                AnsiConsole.MarkupLine($"[DarkOrange]Service '{serviceName}' is already stopped.[/]");
                 return;
             }
 
@@ -392,7 +389,7 @@ public class ServiceManagerUI
             {
                 if (!AnsiConsole.Confirm($"[bold red]WARNING: '{serviceName}' is a critical system service. Stop anyway?[/]", false))
                 {
-                    AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
+                    AnsiConsole.MarkupLine("[DarkOrange]Operation cancelled.[/]");
                     return;
                 }
             }
@@ -401,12 +398,12 @@ public class ServiceManagerUI
                 .Start($"Stopping {serviceName}...", ctx =>
                 {
                     ctx.Spinner(Spinner.Known.Dots);
-                    ctx.SpinnerStyle(Style.Parse("red"));
+                    ctx.SpinnerStyle(Style.Parse("DarkOrange"));
                     service.Stop();
                     service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
                 });
 
-            AnsiConsole.MarkupLine($"[green]✓ Service '{serviceName}' stopped successfully![/]");
+            AnsiConsole.MarkupLine($"[white]✓ Service '{serviceName}' stopped successfully![/]");
 #pragma warning restore CA1416
         }
         catch (Exception ex)
@@ -420,16 +417,16 @@ public class ServiceManagerUI
         try
         {
             string serviceName = AnsiConsole.Prompt(
-                new TextPrompt<string>("[yellow]Enter service name to restart:[/]")
-                    .PromptStyle("yellow"));
+                new TextPrompt<string>("[white]Enter service name to restart:[/]")
+                    .PromptStyle("DarkOrange"));
 
 #pragma warning disable CA1416
             using var service = new ServiceController(serviceName);
             AnsiConsole.Progress()
                 .Start(ctx =>
                 {
-                    var task1 = ctx.AddTask("[green]Stopping service...[/]");
-                    var task2 = ctx.AddTask("[blue]Starting service...[/]");
+                    var task1 = ctx.AddTask("[white]Stopping service...[/]");
+                    var task2 = ctx.AddTask("[white]Starting service...[/]");
 
                     // Останавливаем службу
                     if (service.Status != ServiceControllerStatus.Stopped && service.CanStop)
@@ -445,7 +442,7 @@ public class ServiceManagerUI
                     task2.Increment(100);
                 });
 
-            AnsiConsole.MarkupLine($"[green]✓ Service '{serviceName}' restarted successfully![/]");
+            AnsiConsole.MarkupLine($"[white]✓ Service '{serviceName}' restarted successfully![/]");
 #pragma warning restore CA1416
         }
         catch (Exception ex)
@@ -459,18 +456,18 @@ public class ServiceManagerUI
         try
         {
             string serviceName = AnsiConsole.Prompt(
-                new TextPrompt<string>("[green]Enter service name:[/]")
-                    .PromptStyle("yellow"));
+                new TextPrompt<string>("[white]Enter service name:[/]")
+                    .PromptStyle("yelDarkOrangelow"));
             
             var startupType = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("[yellow]Select startup type:[/]")
-                    .AddChoices(new[] {
+                    .Title("[DarkOrange]Select startup type:[/]")
+                    .AddChoices([
                         "Automatic",
                         "Automatic (Delayed)",
                         "Manual", 
                         "Disabled"
-                    }));
+                    ]));
             
             // Используем PowerShell для изменения типа запуска
             string command = $"Set-Service -Name '{serviceName}' -StartupType {startupType.Split(' ')[0]}";
@@ -497,7 +494,7 @@ public class ServiceManagerUI
                     process.WaitForExit();
                 });
             
-            AnsiConsole.MarkupLine($"[green]✓ Startup type changed to {startupType}[/]");
+            AnsiConsole.MarkupLine($"[white]✓ Startup type changed to {startupType}[/]");
         }
         catch (Exception ex)
         {
@@ -525,15 +522,15 @@ public class ServiceManagerUI
             int automatic = GetAutomaticServicesCount();
             
             var panel = new Panel(
-                $"[bold cyan]Service Statistics[/]\n\n" +
-                $"[green]▶ Running:[/] {running} services\n" +
-                $"[red]⏹ Stopped:[/] {stopped} services\n" +
-                $"[yellow]⏸ Paused:[/] {paused} services\n" +
-                $"[blue]⚡ Automatic:[/] {automatic} services\n" +
+                $"[bold white]Service Statistics[/]\n\n" +
+                $"[white]▶ Running:[/] {running} services\n" +
+                $"[white]⏹ Stopped:[/] {stopped} services\n" +
+                $"[white]⏸ Paused:[/] {paused} services\n" +
+                $"[white]⚡ Automatic:[/] {automatic} services\n" +
                 $"[white]📊 Total:[/] {services.Length} services")
             {
                 Border = BoxBorder.Double,
-                BorderStyle = new Style(Color.Cyan),
+                BorderStyle = new Style(Color.DarkOrange),
                 Padding = new Padding(2, 1, 2, 1)
             };
             
@@ -543,9 +540,9 @@ public class ServiceManagerUI
             var chart = new BreakdownChart()
                 .Width(60)
                 .ShowPercentage()
-                .AddItem("Running", running, Color.Green)
-                .AddItem("Stopped", stopped, Color.Red)
-                .AddItem("Paused", paused, Color.Yellow);
+                .AddItem("Running", running, Color.White)
+                .AddItem("Stopped", stopped, Color.DarkOrange)
+                .AddItem("Paused", paused, Color.Black);
             
             AnsiConsole.Write(chart);
         }

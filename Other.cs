@@ -20,8 +20,8 @@ public class Other
 
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("[bold cyan]🔧 Additional Tools[/]")
-                    .PageSize(10)
+                    .Title("[bold DarkOrange]🔧 Additional Tools[/]")
+                    .PageSize(12)
                     .AddChoices(
                     [
                         "⌨️  Fix Keyboard Issues",
@@ -42,6 +42,7 @@ public class Other
                     RunAsAdmin();
                     break;
                 case "🔙 Back to Main Menu":
+                    Console.Clear();
                     return;
             }
         }
@@ -60,11 +61,11 @@ public class Other
 
             AnsiConsole.Write(
                 new Panel("[bold red]⚠  WARNING: Keyboard Fix Utility[/]")
-                    .BorderColor(Color.Red)
+                    .BorderColor(Color.White)
                     .Padding(1, 1));
 
-            AnsiConsole.MarkupLine("[yellow]This tool attempts to fix common keyboard issues.[/]");
-            AnsiConsole.MarkupLine("[grey]Some operations require administrator privileges.[/]");
+            AnsiConsole.MarkupLine("[white]This tool attempts to fix common keyboard issues.[/]");
+            AnsiConsole.MarkupLine("[white]Some operations require administrator privileges.[/]");
 
             if (!AnsiConsole.Confirm("\n[red]Continue with keyboard fix?[/]", false))
                 return;
@@ -82,30 +83,30 @@ public class Other
 
                 progress.Start(ctx =>
                 {
-                    var task1 = ctx.AddTask("[green]Checking keyboard status...[/]");
+                    var task1 = ctx.AddTask("[DarkOrange]Checking keyboard status...[/]");
                     task1.Increment(25);
 
                     if (IsKeyboardWorking())
                     {
-                        AnsiConsole.MarkupLine("\n[green]✅ Keyboard appears to be working normally.[/]");
+                        AnsiConsole.MarkupLine("\n[DarkOrange]✅ Keyboard appears to be working normally.[/]");
                         return;
                     }
 
                     task1.Increment(25);
 
-                    var task2 = ctx.AddTask("[blue]Attempting driver reset...[/]");
+                    var task2 = ctx.AddTask("[bold white]Attempting driver reset...[/]");
                     ResetKeyboardDriver();
                     task2.Increment(100);
 
-                    var task3 = ctx.AddTask("[yellow]Checking registry settings...[/]");
+                    var task3 = ctx.AddTask("[bold white]Checking registry settings...[/]");
                     EnableKeyboardInRegistry();
                     task3.Increment(100);
 
-                    var task4 = ctx.AddTask("[cyan]Restarting keyboard service...[/]");
+                    var task4 = ctx.AddTask("[bold white]Restarting keyboard service...[/]");
                     RestartKeyboardService();
                     task4.Increment(100);
 
-                    var task5 = ctx.AddTask("[magenta]Enabling in Device Manager...[/]");
+                    var task5 = ctx.AddTask("[bold white]Enabling in Device Manager...[/]");
                     EnableInDeviceManager();
                     task5.Increment(100);
                 });
@@ -123,7 +124,7 @@ public class Other
 
         private static bool IsKeyboardWorking()
         {
-            AnsiConsole.Markup("[yellow]Press any key within 5 seconds to test...[/]");
+            AnsiConsole.Markup("[DarkOrange]Press any key within 5 seconds to test...[/]");
 
             DateTime start = DateTime.Now;
             while ((DateTime.Now - start).TotalSeconds < 5)
@@ -131,7 +132,7 @@ public class Other
                 if (Console.KeyAvailable)
                 {
                     Console.ReadKey(true);
-                    AnsiConsole.MarkupLine("\n[green]✅ Key detected![/]");
+                    AnsiConsole.MarkupLine("\n[white]✅ Key detected![/]");
                     return true;
                 }
                 Thread.Sleep(100);
@@ -234,8 +235,8 @@ public class Other
         private static void ShowResultPanel()
         {
             var panel = new Panel(
-                "[bold green]🎯 KEYBOARD FIX COMPLETE[/]\n\n" +
-                "[yellow]Recommended actions:[/]\n" +
+                "[bold DarkOrange]🎯 KEYBOARD FIX COMPLETE[/]\n\n" +
+                "[white]Recommended actions:[/]\n" +
                 "1. [white]Test your keyboard now[/]\n" +
                 "2. [white]Restart computer if issues persist[/]\n" +
                 "3. [white]Check physical connections[/]\n" +
@@ -244,7 +245,7 @@ public class Other
                 "[grey]Note: Some fixes require system restart.[/]")
             {
                 Border = BoxBorder.Double,
-                BorderStyle = new Style(Color.Green),
+                BorderStyle = new Style(Color.DarkOrange),
                 Padding = new Padding(2, 1, 2, 1)
             };
 
@@ -268,8 +269,8 @@ public class Other
 
                 var choice = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
-                        .Title("[bold cyan]👥 User Management[/]")
-                        .PageSize(10)
+                        .Title("[bold DarkOrange]👥 User Management[/]")
+                        .PageSize(12)
                         .AddChoices(
                         [
                             "📋 List All Users",
@@ -314,7 +315,7 @@ public class Other
         {
             try
             {
-                AnsiConsole.Write(new Rule("[bold cyan]Local Users[/]").RuleStyle("cyan"));
+                AnsiConsole.Write(new Rule("[bold DarkOrange]Local Users[/]").RuleStyle("white"));
 
 #pragma warning disable CA1416 // Проверка совместимости платформы
                 using var ctx = new PrincipalContext(ContextType.Machine);
@@ -328,21 +329,21 @@ public class Other
 
                 var table = new Table()
                     .Title($"[bold]Local User Accounts[/]")
-                    .Border(TableBorder.Rounded)
-                    .AddColumn(new TableColumn("[cyan]Username[/]").LeftAligned())
-                    .AddColumn(new TableColumn("[cyan]Full Name[/]").LeftAligned())
-                    .AddColumn(new TableColumn("[cyan]Description[/]").LeftAligned())
-                    .AddColumn(new TableColumn("[cyan]Enabled[/]").Centered());
+                    .Border(TableBorder.HeavyEdge)
+                    .AddColumn(new TableColumn("[white]Username[/]").LeftAligned())
+                    .AddColumn(new TableColumn("[white]Full Name[/]").LeftAligned())
+                    .AddColumn(new TableColumn("[white]Description[/]").LeftAligned())
+                    .AddColumn(new TableColumn("[white]Enabled[/]").Centered());
 
 #pragma warning disable CA1416 // Проверка совместимости платформы
-                foreach (UserPrincipal found in srch.FindAll())
+                foreach (UserPrincipal found in srch.FindAll().Cast<UserPrincipal>())
                 {
 #pragma warning disable CA1416 // Проверка совместимости платформы
                     table.AddRow(
                         $"[white]{found.SamAccountName}[/]",
-                        $"[grey]{found.DisplayName ?? "N/A"}[/]",
-                        $"[yellow]{found.Description ?? "N/A"}[/]",
-                        found.Enabled == true ? "[green]Yes[/]" : "[red]No[/]");
+                        $"[white]{found.DisplayName ?? "N/A"}[/]",
+                        $"[white]{found.Description ?? "N/A"}[/]",
+                        found.Enabled == true ? "[DarkOrange]Yes[/]" : "[red]No[/]");
 #pragma warning restore CA1416 // Проверка совместимости платформы
                 }
 
@@ -362,16 +363,16 @@ public class Other
             Console.Clear();
 
             var username = AnsiConsole.Prompt(
-                new TextPrompt<string>("[green]Enter username:[/]")
-                    .PromptStyle("yellow")
+                new TextPrompt<string>("[white]Enter username:[/]")
+                    .PromptStyle("DarkOrange")
                     .Validate(name =>
                         !string.IsNullOrWhiteSpace(name) && name.Length >= 3
                             ? ValidationResult.Success()
                             : ValidationResult.Error("[red]Username must be at least 3 characters[/]")));
 
             var password = AnsiConsole.Prompt(
-                new TextPrompt<string>("[green]Enter password:[/]")
-                    .PromptStyle("red")
+                new TextPrompt<string>("[white]Enter password:[/]")
+                    .PromptStyle("DarkOrange")
                     .Secret()
                     .Validate(pass =>
                         pass.Length >= 6
@@ -379,13 +380,13 @@ public class Other
                             : ValidationResult.Error("[red]Password must be at least 6 characters[/]")));
 
             var fullName = AnsiConsole.Prompt(
-                new TextPrompt<string>("[green]Enter full name (optional):[/]")
-                    .PromptStyle("yellow")
+                new TextPrompt<string>("[white]Enter full name (optional):[/]")
+                    .PromptStyle("DarkOrange")
                     .AllowEmpty());
 
             var description = AnsiConsole.Prompt(
-                new TextPrompt<string>("[green]Enter description (optional):[/]")
-                    .PromptStyle("grey")
+                new TextPrompt<string>("[white]Enter description (optional):[/]")
+                    .PromptStyle("DarkOrange")
                     .AllowEmpty());
 
             try
@@ -412,14 +413,14 @@ public class Other
                 user.Save();
 #pragma warning restore CA1416 // Проверка совместимости платформы
 
-                AnsiConsole.MarkupLine($"[green]✅ User '{username}' created successfully![/]");
+                AnsiConsole.MarkupLine($"[white]✅ User '{username}' created successfully![/]");
 
-                if (AnsiConsole.Confirm("[yellow]Add user to 'Users' group?[/]", true))
+                if (AnsiConsole.Confirm("[white]Add user to 'Users' group?[/]", true))
                 {
                     AddUserToGroup(username, "Users");
                 }
 
-                if (AnsiConsole.Confirm("[yellow]Create user folder in Documents?[/]", false))
+                if (AnsiConsole.Confirm("[white]Create user folder in Documents?[/]", false))
                 {
                     CreateUserFolder(username);
                 }
@@ -455,14 +456,14 @@ public class Other
 
                 if (users.Count == 0)
                 {
-                    AnsiConsole.MarkupLine("[yellow]No users found to delete.[/]");
+                    AnsiConsole.MarkupLine("[DarkOrange]No users found to delete.[/]");
                     return;
                 }
 
                 var userToDelete = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
                         .Title("[red]Select user to delete:[/]")
-                        .PageSize(10)
+                        .PageSize(12)
                         .AddChoices(users));
 
                 if (!AnsiConsole.Confirm($"[bold red]⚠  Are you sure you want to delete user '{userToDelete}'?[/]", false))
@@ -500,8 +501,8 @@ public class Other
                         .AddChoices(users));
 
                 var newPassword = AnsiConsole.Prompt(
-                    new TextPrompt<string>("[green]Enter new password:[/]")
-                        .PromptStyle("red")
+                    new TextPrompt<string>("[DarkOrange]Enter new password:[/]")
+                        .PromptStyle("white")
                         .Secret()
                         .Validate(pass =>
                             pass.Length >= 6
@@ -560,11 +561,11 @@ public class Other
 #pragma warning disable CA1416 // Проверка совместимости платформы
                         group.Save();
 #pragma warning restore CA1416 // Проверка совместимости платформы
-                        AnsiConsole.MarkupLine($"[green]✅ User '{username}' added to Administrators group![/]");
+                        AnsiConsole.MarkupLine($"[white]✅ User '{username}' added to Administrators group![/]");
                     }
                     else
                     {
-                        AnsiConsole.MarkupLine($"[yellow]⚠ User '{username}' is already in Administrators group.[/]");
+                        AnsiConsole.MarkupLine($"[DarkOrange]⚠ User '{username}' is already in Administrators group.[/]");
                     }
                 }
             }
@@ -596,16 +597,16 @@ public class Other
 #pragma warning disable CA1416 // Проверка совместимости платформы
                     var panel = new Panel(
                         $"[bold]👤 User Information: {user.SamAccountName}[/]\n\n" +
-                        $"[green]Full Name:[/] [white]{user.DisplayName ?? "N/A"}[/]\n" +
-                        $"[green]Description:[/] [white]{user.Description ?? "N/A"}[/]\n" +
-                        $"[green]Email:[/] [white]{user.EmailAddress ?? "N/A"}[/]\n" +
-                        $"[green]Enabled:[/] {(user.Enabled == true ? "[green]Yes[/]" : "[red]No[/]")}\n" +
-                        $"[green]Password Never Expires:[/] {(user.PasswordNeverExpires ? "[green]Yes[/]" : "[red]No[/]")}\n" +
-                        $"[green]Last Logon:[/] [white]{user.LastLogon?.ToString("yyyy-MM-dd HH:mm") ?? "Never"}[/]\n" +
-                        $"[green]Account Created:[/] [white]{user.Context.ConnectedServer ?? "N/A"}[/]")
+                        $"[DarkOrange]Full Name:[/] [white]{user.DisplayName ?? "N/A"}[/]\n" +
+                        $"[DarkOrange]Description:[/] [white]{user.Description ?? "N/A"}[/]\n" +
+                        $"[DarkOrange]Email:[/] [white]{user.EmailAddress ?? "N/A"}[/]\n" +
+                        $"[DarkOrange]Enabled:[/] {(user.Enabled == true ? "[DarkOrange]Yes[/]" : "[red]No[/]")}\n" +
+                        $"[DarkOrange]Password Never Expires:[/] {(user.PasswordNeverExpires ? "[DarkOrange]Yes[/]" : "[red]No[/]")}\n" +
+                        $"[DarkOrange]Last Logon:[/] [white]{user.LastLogon?.ToString("yyyy-MM-dd HH:mm") ?? "Never"}[/]\n" +
+                        $"[DarkOrange]Account Created:[/] [white]{user.Context.ConnectedServer ?? "N/A"}[/]")
                     {
                         Border = BoxBorder.Rounded,
-                        BorderStyle = new Style(Color.Cyan),
+                        BorderStyle = new Style(Color.White),
                         Padding = new Padding(1, 1, 1, 1)
                     };
 #pragma warning restore CA1416 // Проверка совместимости платформы
@@ -641,7 +642,7 @@ public class Other
         {
             try
             {
-                AnsiConsole.Write(new Rule("[bold yellow]Local Groups[/]").RuleStyle("yellow"));
+                AnsiConsole.Write(new Rule("[bold DarkOrange]Local Groups[/]").RuleStyle("white"));
 
 #pragma warning disable CA1416 // Проверка совместимости платформы
                 using var ctx = new PrincipalContext(ContextType.Machine);
@@ -707,7 +708,7 @@ public class Other
                     username);
 
                 Directory.CreateDirectory(userFolder);
-                AnsiConsole.MarkupLine($"[green]✅ Created folder: {userFolder}[/]");
+                AnsiConsole.MarkupLine($"[DarkOrange]✅ Created folder: {userFolder}[/]");
             }
             catch { }
         }
@@ -730,15 +731,15 @@ public class Other
     {
         var panel = new Panel(
             "[bold red]⚠  ADMINISTRATOR RIGHTS REQUIRED[/]\n\n" +
-            "[yellow]This feature requires administrator privileges.[/]\n" +
+            "[DarkOrange]This feature requires administrator privileges.[/]\n" +
             "[white]Please run the program as Administrator.[/]\n\n" +
-            "[grey]To run as Administrator:[/]\n" +
+            "[DarkOrange]To run as Administrator:[/]\n" +
             "1. Right-click the program\n" +
             "2. Select 'Run as administrator'\n" +
             "3. Confirm UAC prompt")
         {
             Border = BoxBorder.Double,
-            BorderStyle = new Style(Color.Red),
+            BorderStyle = new Style(Color.White),
             Padding = new Padding(2, 1, 2, 1)
         };
 

@@ -7,7 +7,18 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <NoWarn>NU1701</NoWarn>
+    <ApplicationIcon>resources\ico\icon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="resources\fonts\Speed.flf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\ico\icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.5" />
     <PackageReference Include="Spectre.Console" Version="0.54.0" />

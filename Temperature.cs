@@ -26,13 +26,13 @@ public class AdvancedTemperatureMonitor
         Initialize();
         
         var table = new Table()
-            .Title("[bold red]🌡️ Hardware Temperatures[/]")
-            .BorderColor(Color.Red)
+            .Title("[bold white]🌡️ Hardware Temperatures[/]")
+            .BorderColor(Color.DarkOrange)
             .Border(TableBorder.Rounded)
-            .AddColumn(new TableColumn("[cyan]Hardware[/]").LeftAligned())
-            .AddColumn(new TableColumn("[cyan]Sensor[/]").LeftAligned())
-            .AddColumn(new TableColumn("[cyan]Temperature[/]").RightAligned())
-            .AddColumn(new TableColumn("[cyan]Status[/]").Centered());
+            .AddColumn(new TableColumn("[white]Hardware[/]").LeftAligned())
+            .AddColumn(new TableColumn("[white]Sensor[/]").LeftAligned())
+            .AddColumn(new TableColumn("[white]Temperature[/]").RightAligned())
+            .AddColumn(new TableColumn("[white]Status[/]").Centered());
         
         foreach (var hardware in _computer.Hardware)
         {
@@ -62,7 +62,7 @@ public class AdvancedTemperatureMonitor
                     Color color = GetStatusColor(status);
                     
                     table.AddRow(
-                        $"[grey]{hardware.Name}[/]",
+                        $"[white]{hardware.Name}[/]",
                         $"[white]{sensor.Name}[/]",
                         $"[{color.ToMarkup()}]{temp:F1}°C[/]",
                         $"[{color.ToMarkup()}]{status}[/]"
@@ -73,8 +73,8 @@ public class AdvancedTemperatureMonitor
         
         if (table.Rows.Count == 0)
         {
-            AnsiConsole.MarkupLine("[yellow]⚠ Реальные датчики температуры не найдены.[/]");
-            AnsiConsole.MarkupLine("[grey]Убедитесь, что программа запущена от имени АДМИНИСТРАТОРА.[/]");
+            AnsiConsole.MarkupLine("[DarkOrange]⚠ Реальные датчики температуры не найдены.[/]");
+            AnsiConsole.MarkupLine("[white]Убедитесь, что программа запущена от имени АДМИНИСТРАТОРА.[/]");
         }
         else
         {
@@ -82,7 +82,7 @@ public class AdvancedTemperatureMonitor
         }
         
         _computer.Close();
-        AnsiConsole.MarkupLine("\n[grey]Нажмите любую клавишу для выхода...[/]");
+        AnsiConsole.MarkupLine("\n[white]Нажмите любую клавишу для выхода...[/]");
         Console.ReadKey();
     }
     
@@ -113,7 +113,7 @@ public class AdvancedTemperatureMonitor
             "HIGH" => Color.Yellow,
             "NORMAL" => Color.Green,
             "LOW" => Color.Blue,
-            _ => Color.Grey
+            _ => Color.White
         };
     }
 }

@@ -5,23 +5,18 @@ using Spectre.Console;
 
 internal class StartUpManager
 {
-    public bool ShowStartupManagerUI()
+    public static bool ShowStartupManagerUI()
     {
         try
         {
             while (true)
             {
                 Console.Clear();
-
-                AnsiConsole.Write(
-                    new FigletText("Startup Manager")
-                        .Centered()
-                        .Color(Color.Cyan));
-
+                AnsiConsole.Write(new Rule("[DarkOrange]StartUp Management[/]").RuleStyle("white").LeftJustified());
                 var choice = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
-                        .Title("[bold yellow]Startup Management[/]")
-                        .PageSize(10)
+                        .Title("[bold white]Select category[/]")
+                        .PageSize(12)
                         .AddChoices([
                         "📋 View All Startup Items",
                         "📁 View Startup Folder",
@@ -45,10 +40,11 @@ internal class StartUpManager
                         ShowStartupStatistics();
                         break;
                     case "🔙 Back to Main Menu":
+                        Console.Clear();
                         return true;
                 }
 
-                AnsiConsole.MarkupLine("\n[grey]Press any key to continue...[/]");
+                AnsiConsole.MarkupLine("\n[white]Press any key to continue...[/]");
                 Console.ReadKey();
             }
         }
@@ -62,16 +58,16 @@ internal class StartUpManager
         }
     }
 
-    private void ShowAllStartupItemsTable()
+    private static void ShowAllStartupItemsTable()
     {
         var table = new Table()
-            .Title("[bold green]All Startup Items[/]")
+            .Title("[bold DarkOrange]All Startup Items[/]")
             .BorderColor(Color.Blue)
             .Border(TableBorder.Rounded)
-            .AddColumn(new TableColumn("[cyan]Type[/]").Centered())
-            .AddColumn(new TableColumn("[cyan]Name[/]").LeftAligned())
-            .AddColumn(new TableColumn("[cyan]Path/Value[/]").LeftAligned())
-            .AddColumn(new TableColumn("[cyan]Location[/]").LeftAligned());
+            .AddColumn(new TableColumn("[white]Type[/]").Centered())
+            .AddColumn(new TableColumn("[white]Name[/]").LeftAligned())
+            .AddColumn(new TableColumn("[white]Path/Value[/]").LeftAligned())
+            .AddColumn(new TableColumn("[white]Location[/]").LeftAligned());
 
         
         try
@@ -82,10 +78,10 @@ internal class StartUpManager
                 foreach (var file in Directory.GetFiles(userStartup))
                 {
                     table.AddRow(
-                        "[green]File[/]",
+                        "[white]File[/]",
                         $"[white]{Path.GetFileName(file)}[/]",
-                        $"[grey]{TruncateString(file, 40)}[/]", 
-                        "[yellow]User Startup[/]"
+                        $"[white]{TruncateString(file, 40)}[/]", 
+                        "[white]User Startup[/]"
                     );
                 }
             }
@@ -96,10 +92,10 @@ internal class StartUpManager
                 foreach (var file in Directory.GetFiles(commonStartup))
                 {
                     table.AddRow(
-                        "[green]File[/]",
+                        "[white]File[/]",
                         $"[white]{Path.GetFileName(file)}[/]",
-                        $"[grey]{TruncateString(file, 40)}[/]", 
-                        "[yellow]Common Startup[/]"
+                        $"[white]{TruncateString(file, 40)}[/]", 
+                        "[white]Common Startup[/]"
                     );
                 }
             }
@@ -136,10 +132,10 @@ internal class StartUpManager
                         string value = key.GetValue(valueName)?.ToString() ?? "";
 #pragma warning restore CA1416 // Проверка совместимости платформы
                         table.AddRow(
-                            "[blue]Registry[/]",
+                            "[white]Registry[/]",
                             $"[white]{valueName}[/]",
-                            $"[grey]{TruncateString(value, 40)}[/]", 
-                            "[yellow]HKCU\\Run[/]"
+                            $"[white]{TruncateString(value, 40)}[/]", 
+                            "[white]HKCU\\Run[/]"
                         );
                     }
                 }
@@ -159,10 +155,10 @@ internal class StartUpManager
                         string value = key.GetValue(valueName)?.ToString() ?? "";
 #pragma warning restore CA1416 // Проверка совместимости платформы
                         table.AddRow(
-                            "[blue]Registry[/]",
+                            "[white]Registry[/]",
                             $"[white]{valueName}[/]",
-                            $"[grey]{TruncateString(value, 40)}[/]", 
-                            "[yellow]HKLM\\Run[/]"
+                            $"[white]{TruncateString(value, 40)}[/]", 
+                            "[white]HKLM\\Run[/]"
                         );
                     }
                 }
@@ -181,17 +177,17 @@ internal class StartUpManager
         AnsiConsole.Write(table);
     }
 
-    private void ShowStartupFolderTable()
+    private static void ShowStartupFolderTable()
     {
         
         var table = new Table()
-            .Title("[bold green]Startup Folder Files[/]")
-            .BorderColor(Color.Yellow)
+            .Title("[bold white]Startup Folder Files[/]")
+            .BorderColor(Color.DarkOrange)
             .Border(TableBorder.Rounded)
-            .AddColumn(new TableColumn("[cyan]File Name[/]").LeftAligned())
-            .AddColumn(new TableColumn("[cyan]Path[/]").LeftAligned())
-            .AddColumn(new TableColumn("[cyan]Size[/]").RightAligned())
-            .AddColumn(new TableColumn("[cyan]Type[/]").Centered());
+            .AddColumn(new TableColumn("[white]File Name[/]").LeftAligned())
+            .AddColumn(new TableColumn("[white]Path[/]").LeftAligned())
+            .AddColumn(new TableColumn("[white]Size[/]").RightAligned())
+            .AddColumn(new TableColumn("[white]Type[/]").Centered());
 
         try
         {
@@ -203,9 +199,9 @@ internal class StartUpManager
                     FileInfo fi = new(file);
                     table.AddRow(
                         $"[white]{Path.GetFileName(file)}[/]",
-                        $"[grey]{TruncateString(file, 50)}[/]", 
-                        $"[yellow]{fi.Length:N0} bytes[/]",
-                        $"[cyan]{fi.Extension}[/]"
+                        $"[white]{TruncateString(file, 50)}[/]", 
+                        $"[white]{fi.Length:N0} bytes[/]",
+                        $"[white]{fi.Extension}[/]"
                     );
                 }
             }
@@ -218,9 +214,9 @@ internal class StartUpManager
                     FileInfo fi = new(file);
                     table.AddRow(
                         $"[white]{Path.GetFileName(file)}[/]",
-                        $"[grey]{TruncateString(file, 50)}[/]", 
-                        $"[yellow]{fi.Length:N0} bytes[/]",
-                        $"[cyan]{fi.Extension}[/]"
+                        $"[white]{TruncateString(file, 50)}[/]", 
+                        $"[white]{fi.Length:N0} bytes[/]",
+                        $"[white]{fi.Extension}[/]"
                     );
                 }
             }
@@ -238,16 +234,16 @@ internal class StartUpManager
         AnsiConsole.Write(table);
     }
 
-    private void ShowRegistryStartupTable()
+    private static void ShowRegistryStartupTable()
     {
         
         var table = new Table()
-            .Title("[bold blue]Registry Startup Entries[/]")
-            .BorderColor(Color.Blue)
+            .Title("[bold white]Registry Startup Entries[/]")
+            .BorderColor(Color.DarkOrange)
             .Border(TableBorder.Rounded)
-            .AddColumn(new TableColumn("[cyan]Name[/]").LeftAligned())
-            .AddColumn(new TableColumn("[cyan]Value[/]").LeftAligned())
-            .AddColumn(new TableColumn("[cyan]Registry Path[/]").LeftAligned());
+            .AddColumn(new TableColumn("[white]Name[/]").LeftAligned())
+            .AddColumn(new TableColumn("[white]Value[/]").LeftAligned())
+            .AddColumn(new TableColumn("[white]Registry Path[/]").LeftAligned());
 
         try
         {
@@ -265,8 +261,8 @@ internal class StartUpManager
 #pragma warning restore CA1416 // Проверка совместимости платформы
                         table.AddRow(
                             $"[white]{valueName}[/]",
-                            $"[grey]{TruncateString(value, 60)}[/]", 
-                            "[yellow]HKCU\\...\\Run[/]"
+                            $"[white]{TruncateString(value, 60)}[/]", 
+                            "[white]HKCU\\...\\Run[/]"
                         );
                     }
                 }
@@ -286,8 +282,8 @@ internal class StartUpManager
 #pragma warning restore CA1416 // Проверка совместимости платформы
                         table.AddRow(
                             $"[white]{valueName}[/]",
-                            $"[grey]{TruncateString(value, 60)}[/]", 
-                            "[yellow]HKLM\\...\\Run[/]"
+                            $"[white]{TruncateString(value, 60)}[/]", 
+                            "[white]HKLM\\...\\Run[/]"
                         );
                     }
                 }
@@ -342,12 +338,12 @@ internal class StartUpManager
         catch { }
 
         var panel = new Panel($"[bold]Startup Items Statistics[/]\n\n" +
-                              $"📁 Files in Startup Folders: [green]{folderCount}[/]\n" +
-                              $"🔧 Registry Startup Entries: [yellow]{registryCount}[/]\n" +
-                              $"📊 Total Startup Items: [cyan]{folderCount + registryCount}[/]")
+                              $"📁 Files in Startup Folders: [white]{folderCount}[/]\n" +
+                              $"🔧 Registry Startup Entries: [white]{registryCount}[/]\n" +
+                              $"📊 Total Startup Items: [white]{folderCount + registryCount}[/]")
         {
             Border = BoxBorder.Rounded,
-            BorderStyle = new Style(Color.Green),
+            BorderStyle = new Style(Color.DarkOrange),
             Padding = new Padding(2, 1, 2, 1)
         };
 
@@ -359,7 +355,7 @@ internal class StartUpManager
         }
         else if (folderCount + registryCount < 5)
         {
-            AnsiConsole.MarkupLine("\n[green]✓ Good: Minimal startup items.[/]");
+            AnsiConsole.MarkupLine("\n[DarkOrange]✓ Good: Minimal startup items.[/]");
         }
     }
 
