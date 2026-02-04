@@ -5,20 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console;
 
-public class TextDisplay
-{
-    public static void TypeWrite(string text, int delay = 1)
-    {
-        Console.ForegroundColor = ConsoleColor.DarkYellow;
-        foreach (char c in text)
-        {
-            Console.Write(c);
-            Thread.Sleep(delay);
-        }
-        Console.WriteLine();
-    }
-}
-
 public class Rain
 {
     public static void ShowReadMeWithRain()
@@ -147,41 +133,22 @@ public class Rain
     }
 
     private static void ShowReadMeInformation()
-    {
-        Console.Clear();
-        // AnsiConsole.Write(new Rule().RuleStyle("DarkOrange").Centered());
-        // string[] glowColors = ["grey15", "darkorange3", "orange1", "white", "orange1", "darkorange3"];
-        // int colorIndex = 0;
+{
+    Console.Clear();
+    var content = new Rows(
+        new Text("This programm made by me =)"),
+        new Text(""),
+        new Text("Anyone can predict the future... but only the dreamer makes it come true", new Style(Color.White))
+    );
 
-        // while (!Console.KeyAvailable)
-        // {
-        //     Console.SetCursorPosition(0, 1);
+    var panel = new Panel(content)
+        .Header($"[{GraphicSettings.AccentColor}] INFO [/]")
+        .BorderColor(Color.DarkOrange)
+        .RoundedBorder()
+        .Expand(); // Растянуть на всю ширину
 
-        //     string currentColor = glowColors[colorIndex];
-
-        //     AnsiConsole.MarkupLine($"[{currentColor}]╔══════════════════════════════════════════════════════════════════════════════════════╗[/]");
-        //     AnsiConsole.MarkupLine($"[{currentColor}]║ This programm made by me =)                                                          ║[/]");
-        //     AnsiConsole.MarkupLine($"[{currentColor}]║                                                                                      ║[/]");
-        //     AnsiConsole.MarkupLine($"[{currentColor}]║ Anyone can predict the future... but only the dreamer makes it come true             ║[/]");
-        //     AnsiConsole.MarkupLine($"[{currentColor}]╚══════════════════════════════════════════════════════════════════════════════════════╝[/]");
-
-        //     colorIndex = (colorIndex + 1) % glowColors.Length;
-        //     Thread.Sleep(225);
-        //     AnsiConsole.Write(new Rule("[white]Press any key to return in main menu[/]").RuleStyle("DarkOrange").Centered());
-        // }
-
-        // Console.ReadKey(true);
-        // Console.Clear();
-        string textUp = "This programm made by me =)";
-        string textDown = "Anyone can predict the future... but only the dreamer makes it come true";
-        AnsiConsole.Write(new Rule().RuleStyle("DarkOrange").Centered());
-        AnsiConsole.MarkupLine($"[white]╔══════════════════════════════════════════════════════════════════════════════════════╗[/]");
-        AnsiConsole.MarkupLine($"[white]║[/] [italic orange1]{textUp}[/][white]                                                          ║[/]");
-        AnsiConsole.MarkupLine($"[white]║                                                                                      ║[/]");
-        AnsiConsole.MarkupLine($"[white]║[/] [italic orange1]{textDown}[/][white]             ║[/]");
-        AnsiConsole.MarkupLine($"[white]╚══════════════════════════════════════════════════════════════════════════════════════╝[/]");
-        AnsiConsole.Write(new Rule("[white]Press any key to return in main menu[/]").RuleStyle("DarkOrange").Centered());
-        Console.ReadKey();
-        Program.Function_list();
-    }
+    AnsiConsole.Write(panel);
+    AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]Press any key[/]").RuleStyle(GraphicSettings.AccentColor));
+    Console.ReadKey();
+}
 }

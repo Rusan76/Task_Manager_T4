@@ -1,6 +1,7 @@
 using System;
 using LibreHardwareMonitor.Hardware;
 using Spectre.Console;
+namespace Task_Manager_T4;
 
 public class AdvancedTemperatureMonitor
 {
@@ -26,13 +27,13 @@ public class AdvancedTemperatureMonitor
         Initialize();
         
         var table = new Table()
-            .Title("[bold white]🌡️ Hardware Temperatures[/]")
+            .Title($"[{GraphicSettings.SecondaryColor}]🌡️ Hardware Temperatures[/]")
             .BorderColor(Color.DarkOrange)
             .Border(TableBorder.Rounded)
-            .AddColumn(new TableColumn("[white]Hardware[/]").LeftAligned())
-            .AddColumn(new TableColumn("[white]Sensor[/]").LeftAligned())
-            .AddColumn(new TableColumn("[white]Temperature[/]").RightAligned())
-            .AddColumn(new TableColumn("[white]Status[/]").Centered());
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Hardware[/]").LeftAligned())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Sensor[/]").LeftAligned())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Temperature[/]").RightAligned())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Status[/]").Centered());
         
         foreach (var hardware in _computer.Hardware)
         {
@@ -62,8 +63,8 @@ public class AdvancedTemperatureMonitor
                     Color color = GetStatusColor(status);
                     
                     table.AddRow(
-                        $"[white]{hardware.Name}[/]",
-                        $"[white]{sensor.Name}[/]",
+                        $"[{GraphicSettings.SecondaryColor}]{hardware.Name}[/]",
+                        $"[{GraphicSettings.SecondaryColor}]{sensor.Name}[/]",
                         $"[{color.ToMarkup()}]{temp:F1}°C[/]",
                         $"[{color.ToMarkup()}]{status}[/]"
                     );
@@ -73,8 +74,8 @@ public class AdvancedTemperatureMonitor
         
         if (table.Rows.Count == 0)
         {
-            AnsiConsole.MarkupLine("[DarkOrange]⚠ Реальные датчики температуры не найдены.[/]");
-            AnsiConsole.MarkupLine("[white]Убедитесь, что программа запущена от имени АДМИНИСТРАТОРА.[/]");
+            AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]]⚠ Реальные датчики температуры не найдены.[/]");
+            AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Убедитесь, что программа запущена от имени АДМИНИСТРАТОРА.[/]");
         }
         else
         {
@@ -82,7 +83,7 @@ public class AdvancedTemperatureMonitor
         }
         
         _computer.Close();
-        AnsiConsole.MarkupLine("\n[white]Нажмите любую клавишу для выхода...[/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]Нажмите любую клавишу для выхода...[/]");
         Console.ReadKey();
     }
     

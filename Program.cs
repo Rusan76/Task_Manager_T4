@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Diagnostics;
 using Spectre.Console;
-using ProjectT4;
 using Task_Manager_T4;
 using System.IO;
 
@@ -19,8 +18,7 @@ internal class Program
             return;
         }
         string fontPath = Path.Combine(AppContext.BaseDirectory, "resources", "fonts", "Speed.flf");
-        bool keepRunning = true;
-        while (keepRunning)
+        while (true)
         {
             AnsiConsole.Clear();
 
@@ -52,7 +50,7 @@ internal class Program
                     .Header("[bold white] System Dashboard [/]")
                     .Expand()
                     .BorderColor(Color.White));
-            AnsiConsole.Write(new Rule("[white]V1.2 Press any key to continue[/]").RuleStyle("orange1"));
+            AnsiConsole.Write(new Rule("[white]V1.3 Press any key to continue[/]").RuleStyle("orange1"));
             Console.ReadKey();
             Function_list();
         }
@@ -65,9 +63,9 @@ internal class Program
         {
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("[bold DarkOrange]Select an option:[/]")
-                    .PageSize(12)
-                    .MoreChoicesText("[white](Move up and down to reveal more options)[/]")
+                    .Title($"[{GraphicSettings.AccentColor}]Select an option:[/]")
+                    .PageSize(GraphicSettings.PageSize)
+                    .MoreChoicesText($"[{GraphicSettings.NeutralColor}](Move up and down to reveal more options)[/]")
                     .AddChoices(
                     [
                         "📊 Process Management",
@@ -75,13 +73,16 @@ internal class Program
                         "⚡ Startup Manager",
                         "💻 System Information",
                         "⚙️ Drives",
+                        "Registry",
                         "🖥️ Show System Load",
                         "🌡️ Check Temperature",
                         "🔩 Benchmark",
                         "🚀 Program Launcher",
-                        "📸 Screenshot Tool",
+                        // "📸 Screenshot Tool",
                         "File and folder manager",
+                        "Program Manager",
                         "❔ Other",
+                        "Graphic Settings",
                         "🎨 OpenMe",
                         "❌ Exit"
                     ]));
@@ -94,9 +95,9 @@ internal class Program
                 case "💻 System Information":
                     GetInfoPc.Main_Information_Collection();
                     break;
-                case "📸 Screenshot Tool":
-                    GetInfoPc.TakeScreenshotMenu();
-                    break;
+                // case "📸 Screenshot Tool":
+                //     GetInfoPc.TakeScreenshotMenu();
+                //     break;
                 case "🚀 Program Launcher":
                     OpenProgram.OpenPrograms();
                     break;
@@ -141,6 +142,16 @@ internal class Program
                     Console.Clear();
                     MainFF.PrintFunctions();
                     break;
+                case "Registry":
+                    Management_Registry.Main_Menu_Registry();
+                    Console.Clear();
+                    break;
+                case "Program Manager":
+                    ProgramManager.MainMenuProgramManager();
+                    break;      
+                case "Graphic Settings":
+                    GraphicSettings.ChangeTheme();
+                    break;      
                 case "❌ Exit":
                     Environment.Exit(0);
                     break;
@@ -151,13 +162,14 @@ internal class Program
     private static void ShowSystemLoad()
     {
         Console.Clear();
-        AnsiConsole.MarkupLine("[bold DarkOrange]System Load Monitoring[/]");
-        AnsiConsole.MarkupLine("[white]Updates every two seconds. Press any key to exit.[/]");
-        AnsiConsole.WriteLine();
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]System Load Monitoring[/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Updates every two seconds. Press any key to exit.[/]");
 
         var table = new Table
         {
             Border = TableBorder.Rounded
+
+
         };
 
         table.AddColumn(new TableColumn("[bold]Time[/]").Centered());
@@ -207,12 +219,12 @@ internal class Program
             if (performanceCounterCpu != null && performanceCounterMemory != null)
             {
 
-#pragma warning disable CA1416
+
                 cpuUsage = performanceCounterCpu.NextValue();
-#pragma warning restore CA1416 
-#pragma warning disable CA1416 
+
+
                 memoryUsagePercent = performanceCounterMemory.NextValue();
-#pragma warning restore CA1416 
+
                 usedMemoryBytes = (long)(memoryUsagePercent / 100.0 * totalSystemMemory);
             }
             else
@@ -245,16 +257,15 @@ internal class Program
 
 
             Console.Clear();
-            AnsiConsole.MarkupLine("[bold DarkOrange]System Load Monitoring[/]");
+            AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]System Load Monitoring[/]");
 
             if (performanceCounterCpu == null || performanceCounterMemory == null)
             {
                 AnsiConsole.MarkupLine("[yellow]⚠ Using simulated data[/]");
             }
 
-            AnsiConsole.MarkupLine("[white]Updates every two seconds. Press any key to exit.[/]");
-            AnsiConsole.WriteLine();
-            AnsiConsole.Write(table);
+            AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Updates every two seconds. Press any key to exit.[/]");
+            AnsiConsole.Write(table.BorderColor(Color.DarkOrange3)); //dodelat'
 
             Thread.Sleep(2000);
         }

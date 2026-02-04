@@ -1,7 +1,9 @@
 using System;
 using System.IO;
+using System.Linq;
 using Microsoft.Win32;
 using Spectre.Console;
+using Task_Manager_T4;
 
 internal class StartUpManager
 {
@@ -12,16 +14,17 @@ internal class StartUpManager
             while (true)
             {
                 Console.Clear();
-                AnsiConsole.Write(new Rule("[DarkOrange]StartUp Management[/]").RuleStyle("white").LeftJustified());
+                AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]StartUp Management[/]").RuleStyle(GraphicSettings.AccentColor).LeftJustified());
                 var choice = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
-                        .Title("[bold white]Select category[/]")
+                        .Title($"[{GraphicSettings.SecondaryColor}]Select category[/]")
                         .PageSize(12)
                         .AddChoices([
                         "📋 View All Startup Items",
                         "📁 View Startup Folder",
                         "🔧 View Registry Entries",
                         "📊 Startup Statistics",
+                        "Delete the file from startup",
                         "🔙 Back to Main Menu"
                         ]));
 
@@ -39,12 +42,15 @@ internal class StartUpManager
                     case "📊 Startup Statistics":
                         ShowStartupStatistics();
                         break;
+                    case "Delete the file from startup":
+                        RemoveFromStartup();
+                        break;
                     case "🔙 Back to Main Menu":
                         Console.Clear();
                         return true;
                 }
 
-                AnsiConsole.MarkupLine("\n[white]Press any key to continue...[/]");
+                AnsiConsole.MarkupLine($"\n[{GraphicSettings.NeutralColor}]Press any key to continue...[/]");
                 Console.ReadKey();
             }
         }
@@ -58,18 +64,75 @@ internal class StartUpManager
         }
     }
 
+    private static void RemoveFromStartup()
+    {
+        Console.Clear();
+        AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]Remove From Startup[/]").RuleStyle(GraphicSettings.AccentColor).LeftJustified());
+        const string runPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
+
+        try
+        {
+            // 1. Открываем ветку на чтение и запись
+            using RegistryKey key = Registry.CurrentUser.OpenSubKey(runPath, true);
+            if (key == null)
+            {
+                AnsiConsole.MarkupLine("[red][!] Не удалось получить доступ к автозагрузке.[/]");
+                return;
+            }
+
+            // 2. Получаем список всех программ в автозагрузке
+            string[] valueNames = key.GetValueNames();
+
+            if (valueNames.Length == 0)
+            {
+                AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Список автозагрузки пуст.[/]");
+                Console.ReadKey();
+                return;
+            }
+
+            // 3. Выбор программы для удаления
+            var appToRemove = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title($"[{GraphicSettings.SecondaryColor}]ВЫБЕРИТЕ ПРОГРАММУ ДЛЯ ИСКЛЮЧЕНИЯ ИЗ АВТОЗАПУСКА:[/]")
+                    .PageSize(12)
+                    // Не забываем Markup.Escape, чтобы не "крашнулось" от скобок в именах
+                    .AddChoices(valueNames.Select(n => Markup.Escape(n)).Concat(["⬅ ОТМЕНА"])));
+
+            if (appToRemove == "⬅ ОТМЕНА") return;
+
+            // Находим оригинальное имя (до экранирования)
+            string originalName = valueNames.First(n => Markup.Escape(n) == appToRemove);
+
+            // 4. Подтверждение и удаление
+            if (AnsiConsole.Confirm($"[bold red]ВНИМАНИЕ:[/] Убрать [{GraphicSettings.SecondaryColor}]{appToRemove}[/] из автозагрузки?"))
+            {
+                key.DeleteValue(originalName);
+                AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor} Запись '{appToRemove}' успешно удалена из реестра.[/]");
+            }
+        }
+        catch (Exception ex)
+        {
+            AnsiConsole.MarkupLine($"[bold red][!] Ошибка при модификации реестра:[/] {ex.Message}");
+        }
+
+        AnsiConsole.MarkupLine($"\n[{GraphicSettings.SecondaryColor}]Нажмите любую клавишу...[/]");
+        Console.ReadKey();
+        Console.Clear();
+    }
+
+
     private static void ShowAllStartupItemsTable()
     {
         var table = new Table()
-            .Title("[bold DarkOrange]All Startup Items[/]")
-            .BorderColor(Color.Blue)
+            .Title($"[{GraphicSettings.SecondaryColor}]All Startup Items[/]")
+            .BorderColor(Color.DarkOrange) //исправить
             .Border(TableBorder.Rounded)
-            .AddColumn(new TableColumn("[white]Type[/]").Centered())
-            .AddColumn(new TableColumn("[white]Name[/]").LeftAligned())
-            .AddColumn(new TableColumn("[white]Path/Value[/]").LeftAligned())
-            .AddColumn(new TableColumn("[white]Location[/]").LeftAligned());
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Type[/]").Centered())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Name[/]").LeftAligned())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Path/Value[/]").LeftAligned())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Location[/]").LeftAligned());
 
-        
+
         try
         {
             string userStartup = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
@@ -78,10 +141,10 @@ internal class StartUpManager
                 foreach (var file in Directory.GetFiles(userStartup))
                 {
                     table.AddRow(
-                        "[white]File[/]",
-                        $"[white]{Path.GetFileName(file)}[/]",
-                        $"[white]{TruncateString(file, 40)}[/]", 
-                        "[white]User Startup[/]"
+                        $"[{GraphicSettings.SecondaryColor}]File[/]",
+                        $"[{GraphicSettings.SecondaryColor}]{Path.GetFileName(file)}[/]",
+                        $"[{GraphicSettings.SecondaryColor}]{TruncateString(file, 40)}[/]",
+                        $"[{GraphicSettings.SecondaryColor}]User Startup[/]"
                     );
                 }
             }
@@ -92,10 +155,10 @@ internal class StartUpManager
                 foreach (var file in Directory.GetFiles(commonStartup))
                 {
                     table.AddRow(
-                        "[white]File[/]",
-                        $"[white]{Path.GetFileName(file)}[/]",
-                        $"[white]{TruncateString(file, 40)}[/]", 
-                        "[white]Common Startup[/]"
+                        $"[{GraphicSettings.SecondaryColor}]File[/]",
+                        $"[{GraphicSettings.SecondaryColor}]{Path.GetFileName(file)}[/]",
+                        $"[{GraphicSettings.SecondaryColor}]{TruncateString(file, 40)}[/]",
+                        $"[{GraphicSettings.SecondaryColor}]Common Startup[/]"
                     );
                 }
             }
@@ -115,50 +178,48 @@ internal class StartUpManager
             );
         }
 
-        
+
         try
         {
 
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey(
                 @"Software\Microsoft\Windows\CurrentVersion\Run"))
             {
                 if (key != null)
                 {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
                     foreach (string valueName in key.GetValueNames())
                     {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
                         string value = key.GetValue(valueName)?.ToString() ?? "";
-#pragma warning restore CA1416 // Проверка совместимости платформы
                         table.AddRow(
-                            "[white]Registry[/]",
-                            $"[white]{valueName}[/]",
-                            $"[white]{TruncateString(value, 40)}[/]", 
-                            "[white]HKCU\\Run[/]"
+                            $"[{GraphicSettings.SecondaryColor}]Registry[/]",
+                            $"[{GraphicSettings.SecondaryColor}]{valueName}[/]",
+                            $"[{GraphicSettings.SecondaryColor}]{TruncateString(value, 40)}[/]",
+                            $"[{GraphicSettings.SecondaryColor}]HKCU\\Run[/]"
                         );
                     }
                 }
             }
 
 
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
             using (RegistryKey key = Registry.LocalMachine.OpenSubKey(
                 @"Software\Microsoft\Windows\CurrentVersion\Run"))
             {
                 if (key != null)
                 {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
                     foreach (string valueName in key.GetValueNames())
                     {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
                         string value = key.GetValue(valueName)?.ToString() ?? "";
-#pragma warning restore CA1416 // Проверка совместимости платформы
                         table.AddRow(
-                            "[white]Registry[/]",
-                            $"[white]{valueName}[/]",
-                            $"[white]{TruncateString(value, 40)}[/]", 
-                            "[white]HKLM\\Run[/]"
+                            $"[{GraphicSettings.SecondaryColor}]Registry[/]",
+                            $"[{GraphicSettings.SecondaryColor}]{valueName}[/]",
+                            $"[{GraphicSettings.SecondaryColor}]{TruncateString(value, 40)}[/]",
+                            $"[{GraphicSettings.SecondaryColor}]HKLM\\Run[/]"
                         );
                     }
                 }
@@ -179,15 +240,15 @@ internal class StartUpManager
 
     private static void ShowStartupFolderTable()
     {
-        
+
         var table = new Table()
-            .Title("[bold white]Startup Folder Files[/]")
+            .Title($"[{GraphicSettings.SecondaryColor}]Startup Folder Files[/]")
             .BorderColor(Color.DarkOrange)
             .Border(TableBorder.Rounded)
-            .AddColumn(new TableColumn("[white]File Name[/]").LeftAligned())
-            .AddColumn(new TableColumn("[white]Path[/]").LeftAligned())
-            .AddColumn(new TableColumn("[white]Size[/]").RightAligned())
-            .AddColumn(new TableColumn("[white]Type[/]").Centered());
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]File Name[/]").LeftAligned())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Path[/]").LeftAligned())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Size[/]").RightAligned())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Type[/]").Centered());
 
         try
         {
@@ -198,10 +259,10 @@ internal class StartUpManager
                 {
                     FileInfo fi = new(file);
                     table.AddRow(
-                        $"[white]{Path.GetFileName(file)}[/]",
-                        $"[white]{TruncateString(file, 50)}[/]", 
-                        $"[white]{fi.Length:N0} bytes[/]",
-                        $"[white]{fi.Extension}[/]"
+                        $"[{GraphicSettings.SecondaryColor}]{Path.GetFileName(file)}[/]",
+                        $"[{GraphicSettings.SecondaryColor}]{TruncateString(file, 50)}[/]",
+                        $"[{GraphicSettings.SecondaryColor}]{fi.Length:N0} bytes[/]",
+                        $"[{GraphicSettings.SecondaryColor}]{fi.Extension}[/]"
                     );
                 }
             }
@@ -213,10 +274,10 @@ internal class StartUpManager
                 {
                     FileInfo fi = new(file);
                     table.AddRow(
-                        $"[white]{Path.GetFileName(file)}[/]",
-                        $"[white]{TruncateString(file, 50)}[/]", 
-                        $"[white]{fi.Length:N0} bytes[/]",
-                        $"[white]{fi.Extension}[/]"
+                        $"[{GraphicSettings.SecondaryColor}]{Path.GetFileName(file)}[/]",
+                       $"[{GraphicSettings.SecondaryColor}]{TruncateString(file, 50)}[/]",
+                       $"[{GraphicSettings.SecondaryColor}]{fi.Length:N0} bytes[/]",
+                        $"[{GraphicSettings.SecondaryColor}]{fi.Extension}[/]"
                     );
                 }
             }
@@ -236,54 +297,52 @@ internal class StartUpManager
 
     private static void ShowRegistryStartupTable()
     {
-        
+
         var table = new Table()
-            .Title("[bold white]Registry Startup Entries[/]")
+            .Title($"[ {GraphicSettings.SecondaryColor}]Registry Startup Entries[/]")
             .BorderColor(Color.DarkOrange)
             .Border(TableBorder.Rounded)
-            .AddColumn(new TableColumn("[white]Name[/]").LeftAligned())
-            .AddColumn(new TableColumn("[white]Value[/]").LeftAligned())
-            .AddColumn(new TableColumn("[white]Registry Path[/]").LeftAligned());
+            .AddColumn(new TableColumn($"[ {GraphicSettings.SecondaryColor}]Name[/]").LeftAligned())
+            .AddColumn(new TableColumn($"[ {GraphicSettings.SecondaryColor}]Value[/]").LeftAligned())
+            .AddColumn(new TableColumn($"[ {GraphicSettings.SecondaryColor}]Registry Path[/]").LeftAligned());
 
         try
         {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey(
                 @"Software\Microsoft\Windows\CurrentVersion\Run"))
             {
                 if (key != null)
                 {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
                     foreach (string valueName in key.GetValueNames())
                     {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
                         string value = key.GetValue(valueName)?.ToString() ?? "";
-#pragma warning restore CA1416 // Проверка совместимости платформы
                         table.AddRow(
-                            $"[white]{valueName}[/]",
-                            $"[white]{TruncateString(value, 60)}[/]", 
-                            "[white]HKCU\\...\\Run[/]"
+                            $"[ {GraphicSettings.SecondaryColor}]{valueName}[/]",
+                            $"[ {GraphicSettings.SecondaryColor}]{TruncateString(value, 60)}[/]",
+                            $"[ {GraphicSettings.SecondaryColor}]HKCU\\...\\Run[/]"
                         );
                     }
                 }
             }
 
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
             using (RegistryKey key = Registry.LocalMachine.OpenSubKey(
                 @"Software\Microsoft\Windows\CurrentVersion\Run"))
             {
                 if (key != null)
                 {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
                     foreach (string valueName in key.GetValueNames())
                     {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
                         string value = key.GetValue(valueName)?.ToString() ?? "";
-#pragma warning restore CA1416 // Проверка совместимости платформы
                         table.AddRow(
-                            $"[white]{valueName}[/]",
-                            $"[white]{TruncateString(value, 60)}[/]", 
-                            "[white]HKLM\\...\\Run[/]"
+                            $"[ {GraphicSettings.SecondaryColor}]{valueName}[/]",
+                            $"[ {GraphicSettings.SecondaryColor}]{TruncateString(value, 60)}[/]",
+                            $"[ {GraphicSettings.SecondaryColor}]HKLM\\...\\Run[/]"
                         );
                     }
                 }
@@ -317,30 +376,26 @@ internal class StartUpManager
             if (Directory.Exists(commonStartup))
                 folderCount += Directory.GetFiles(commonStartup).Length;
 
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
             using (RegistryKey key1 = Registry.CurrentUser.OpenSubKey(
                 @"Software\Microsoft\Windows\CurrentVersion\Run"))
             {
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
                 registryCount += key1?.GetValueNames().Length ?? 0;
-#pragma warning restore CA1416 // Проверка совместимости платформы
             }
 
-#pragma warning disable CA1416 // Проверка совместимости платформы
-            using (RegistryKey key2 = Registry.LocalMachine.OpenSubKey(
-                @"Software\Microsoft\Windows\CurrentVersion\Run"))
-            {
-#pragma warning disable CA1416 // Проверка совместимости платформы
-                registryCount += key2?.GetValueNames().Length ?? 0;
-#pragma warning restore CA1416 // Проверка совместимости платформы
-            }
+
+            using RegistryKey key2 = Registry.LocalMachine.OpenSubKey(
+                @"Software\Microsoft\Windows\CurrentVersion\Run");
+
+            registryCount += key2?.GetValueNames().Length ?? 0;
         }
         catch { }
 
-        var panel = new Panel($"[bold]Startup Items Statistics[/]\n\n" +
-                              $"📁 Files in Startup Folders: [white]{folderCount}[/]\n" +
-                              $"🔧 Registry Startup Entries: [white]{registryCount}[/]\n" +
-                              $"📊 Total Startup Items: [white]{folderCount + registryCount}[/]")
+        var panel = new Panel($"[{GraphicSettings.SecondaryColor}]Startup Items Statistics[/]\n\n" +
+                              $"📁 Files in Startup Folders: [{GraphicSettings.SecondaryColor}]{folderCount}[/]\n" +
+                              $"🔧 Registry Startup Entries: [{GraphicSettings.SecondaryColor}]{registryCount}[/]\n" +
+                              $"📊 Total Startup Items: [{GraphicSettings.SecondaryColor}]{folderCount + registryCount}[/]")
         {
             Border = BoxBorder.Rounded,
             BorderStyle = new Style(Color.DarkOrange),
@@ -355,16 +410,16 @@ internal class StartUpManager
         }
         else if (folderCount + registryCount < 5)
         {
-            AnsiConsole.MarkupLine("\n[DarkOrange]✓ Good: Minimal startup items.[/]");
+            AnsiConsole.MarkupLine($"\n[{GraphicSettings.SecondaryColor}]✓ Good: Minimal startup items.[/]");
         }
     }
 
-    
+
     private static string TruncateString(string text, int maxLength)
     {
         if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
             return text;
 
-        return text.Substring(0, maxLength - 3) + "...";
+        return string.Concat(text.AsSpan(0, maxLength - 3), "...");
     }
 }

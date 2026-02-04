@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Linq;
 using Spectre.Console;
+using Task_Manager_T4;
 
 class Process_management
 {
@@ -13,12 +14,12 @@ class Process_management
         {
             Console.Clear();
             
-            AnsiConsole.Write(new Rule("[DarkOrange]Process Management[/]").RuleStyle("white").LeftJustified());
+            AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]Process Management[/]").RuleStyle(GraphicSettings.AccentColor).LeftJustified());
             
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("[white]Select category[/]")
-                    .PageSize(12)
+                    .Title($"[{GraphicSettings.SecondaryColor}]Select category[/]")
+                    .PageSize(GraphicSettings.PageSize)
                     .AddChoices([
                         "📋 Show All Processes",
                         "🔍 Find Process by Name",
@@ -66,7 +67,7 @@ class Process_management
                     return;
             }
             
-            Console.WriteLine("\nPress any key to continue...");
+            AnsiConsole.MarkupLine($"\n[{GraphicSettings.NeutralColor}]Нажмите любую клавишу для продолжения...[/]");
             Console.ReadKey();
         }
     }
@@ -87,38 +88,38 @@ class Process_management
         Process[] runningProcesses = Process.GetProcesses();
         
         var table = new Table()
-            .Title($"[bold DarkOrange]Running Processes: {runningProcesses.Length}[/]")
-            .BorderColor(Color.Blue)
+            .Title($"[{GraphicSettings.SecondaryColor}]Running Processes: {runningProcesses.Length}[/]")
+            .BorderColor(Color.DarkOrange)
             .Border(TableBorder.Rounded)
-            .AddColumn(new TableColumn("[white]ID[/]").Centered())
-            .AddColumn(new TableColumn("[white]Name[/]").LeftAligned())
-            .AddColumn(new TableColumn("[white]Memory (MB)[/]").RightAligned())
-            .AddColumn(new TableColumn("[white]Priority[/]").Centered())
-            .AddColumn(new TableColumn("[white]Status[/]").Centered());
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]ID[/]").Centered())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Name[/]").LeftAligned())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Memory (MB)[/]").RightAligned())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Priority[/]").Centered())
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Status[/]").Centered());
         
         foreach (Process proc in runningProcesses.OrderBy(p => p.ProcessName))
         {
             try
             {
-                string status = proc.Responding ? "[DarkOrange]YES[/]" : "[red] NO[/]";
+                string status = proc.Responding ? $"[{GraphicSettings.SecondaryColor}]YES[/]" : "[red] NO[/]";
                 string memory = $"{proc.WorkingSet64 / 1024 / 1024:N0}";
                 string priority = proc.BasePriority.ToString();
                 
                 table.AddRow(
-                    $"[white]{proc.Id}[/]",
-                    $"[white]{proc.ProcessName}[/]",
-                    $"[white]{memory}[/]",
-                    $"[white]{priority}[/]",
-                    $"[white]{status}[/]");
+                    $"[{GraphicSettings.SecondaryColor}]{proc.Id}[/]",
+                    $"[{GraphicSettings.SecondaryColor}]{proc.ProcessName}[/]",
+                    $"[{GraphicSettings.SecondaryColor}]{memory}[/]",
+                    $"[{GraphicSettings.SecondaryColor}]{priority}[/]",
+                    $"[{GraphicSettings.SecondaryColor}]{status}[/]");
             }
             catch 
             {
                 table.AddRow(
-                    $"[white]{proc.Id}[/]",
-                    $"[white]{proc.ProcessName}[/]",
-                    $"[white]N/A[/]",
-                    $"[white]N/A[/]",
-                    "[white]?[/]");
+                    $"[{GraphicSettings.SecondaryColor}]{proc.Id}[/]",
+                    $"[{GraphicSettings.SecondaryColor}]{proc.ProcessName}[/]",
+                    $"[{GraphicSettings.SecondaryColor}]N/A[/]",
+                    $"[{GraphicSettings.SecondaryColor}]N/A[/]",
+                    "[{GraphicSettings.SecondaryColor}]?[/]");
             }
         }
         
@@ -130,13 +131,13 @@ class Process_management
             .AddColumn(new GridColumn().PadRight(2))
             .AddColumn(new GridColumn())
             .AddRow(
-                new Panel($"[bold]{runningProcesses.Length}[/]\nTotal").BorderColor(Color.White),
+                new Panel($"[bold]{runningProcesses.Length}[/]\nTotal").BorderColor(Color.White), //исправить
                 new Panel($"[bold]{runningProcesses.Count(p => 
                 {
                     try { return p.Responding; } 
                     catch { return false; }
                 })}[/]\nResponding").BorderColor(Color.White),
-                new Panel($"[bold]{runningProcesses.Count(p => p.BasePriority > 8)}[/]\nSystem").BorderColor(Color.White)
+                new Panel($"[bold]{runningProcesses.Count(p => p.BasePriority > 8)}[/]\nSystem").BorderColor(Color.White) //исрпавить
             );
         
         AnsiConsole.Write(grid);
@@ -148,8 +149,8 @@ class Process_management
         Console.Clear();
         
         string processName = AnsiConsole.Prompt(
-            new TextPrompt<string>("[DarkOrange]Enter process name:[/]")
-                .PromptStyle("white"));
+            new TextPrompt<string>($"[{GraphicSettings.SecondaryColor}]Enter process name:[/]")
+                .PromptStyle(GraphicSettings.AccentColor));
         
         if (string.IsNullOrWhiteSpace(processName))
         {
@@ -166,19 +167,19 @@ class Process_management
         }
         
         var table = new Table()
-            .Title($"[bold DarkOrange]Found {processes.Length} processes[/]")
+            .Title($"[{GraphicSettings.AccentColor}]Found {processes.Length} processes[/]")
             .BorderColor(Color.Green)
             .Border(TableBorder.Rounded)
-            .AddColumn(new TableColumn("[white]ID[/]"))
-            .AddColumn(new TableColumn("[white]Name[/]"))
-            .AddColumn(new TableColumn("[white]Memory (MB)[/]"))
-            .AddColumn(new TableColumn("[white]Status[/]"));
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]ID[/]"))
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Name[/]"))
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Memory (MB)[/]"))
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Status[/]"));
         
         foreach (Process proc in processes)
         {
             try
             {
-                string status = proc.Responding ? "[DarkOrange]Running[/]" : "[red]Not Responding[/]";
+                string status = proc.Responding ? $"[{GraphicSettings.SecondaryColor}]Running[/]" : "[red]Not Responding[/]";
                 string memory = $"{proc.WorkingSet64 / 1024 / 1024:N0}";
                 
                 table.AddRow(
@@ -206,24 +207,24 @@ class Process_management
         Console.Clear();
         
         int processId = AnsiConsole.Prompt(
-            new TextPrompt<int>("[white]Enter process ID to kill:[/]")
-                .PromptStyle("DarkOrange")
+            new TextPrompt<int>($"[{GraphicSettings.SecondaryColor}]Enter process ID to kill:[/]")
+                .PromptStyle(GraphicSettings.AccentColor) //исправить
                 .ValidationErrorMessage("[red]Invalid process ID![/]"));
         
         try
         {
             Process process = Process.GetProcessById(processId);
             
-            AnsiConsole.MarkupLine($"[white]Found process: {process.ProcessName} (ID: {process.Id})[/]");
+            AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Found process: {process.ProcessName} (ID: {process.Id})[/]");
             
             if (AnsiConsole.Confirm("[red]Are you sure you want to kill this process?[/]", false))
             {
                 process.Kill();
-                AnsiConsole.MarkupLine($"[white]✓ Process {process.ProcessName} (ID: {process.Id}) killed successfully.[/]");
+                AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]✓ Process {process.ProcessName} (ID: {process.Id}) killed successfully.[/]");
             }
             else
             {
-                AnsiConsole.MarkupLine("[DarkOrange]Operation cancelled.[/]");
+                AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Operation cancelled.[/]");
             }
         }
         catch (ArgumentException)
@@ -237,7 +238,7 @@ class Process_management
             
             if (ex.Message.Contains("access") || ex.Message.Contains("denied"))
             {
-                AnsiConsole.MarkupLine("[DarkOrange]Try running this program as administrator.[/]");
+                AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Try running this program as administrator.[/]");
             }
         }
     }
@@ -248,8 +249,8 @@ class Process_management
         Console.Clear();
         
         string processName = AnsiConsole.Prompt(
-            new TextPrompt<string>("[DarkOrange]Enter process name to kill:[/]")
-                .PromptStyle("white"));
+            new TextPrompt<string>($"[{GraphicSettings.SecondaryColor}]Enter process name to kill:[/]")
+                .PromptStyle(GraphicSettings.AccentColor));
         
         if (string.IsNullOrWhiteSpace(processName))
         {
@@ -265,7 +266,7 @@ class Process_management
             return;
         }
         
-        AnsiConsole.MarkupLine($"[DarkOrange]Found {processes.Length} processes with name '{processName}'[/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Found {processes.Length} processes with name '{processName}'[/]");
         
         if (AnsiConsole.Confirm($"[red]Kill all {processes.Length} processes?[/]", false))
         {
@@ -278,7 +279,7 @@ class Process_management
                 {
                     proc.Kill();
                     killedCount++;
-                    AnsiConsole.MarkupLine($"[DarkOrange]✓ {proc.ProcessName} (ID: {proc.Id}) killed.[/]");
+                    AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]✓ {proc.ProcessName} (ID: {proc.Id}) killed.[/]");
                 }
                 catch (Exception ex)
                 {
@@ -287,7 +288,7 @@ class Process_management
                 }
             }
             
-            AnsiConsole.MarkupLine($"[yellow]Successfully killed: {killedCount} of {processes.Length}[/]");
+            AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Successfully killed: {killedCount} of {processes.Length}[/]");
             if (failedCount > 0)
             {
                 AnsiConsole.MarkupLine($"[red]Failed to kill: {failedCount} processes[/]");
@@ -295,7 +296,7 @@ class Process_management
         }
         else
         {
-            AnsiConsole.MarkupLine("[DarkOrange]Operation cancelled.[/]");
+            AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Operation cancelled.[/]");
         }
     }
     
@@ -305,13 +306,13 @@ class Process_management
         Console.Clear();
         
         string programPath = AnsiConsole.Prompt(
-            new TextPrompt<string>("[DarkOrange]Enter program path or name:[/]")
-                .PromptStyle("white")
+            new TextPrompt<string>($"[{GraphicSettings.SecondaryColor}]Enter program path or name:[/]")
+                .PromptStyle(GraphicSettings.AccentColor)
                 .DefaultValue("notepad.exe"));
         
         string arguments = AnsiConsole.Prompt(
-            new TextPrompt<string>("[DarkOrange]Enter arguments (optional):[/]")
-                .PromptStyle("white")
+            new TextPrompt<string>($"[{GraphicSettings.SecondaryColor}]Enter arguments (optional):[/]")
+                .PromptStyle(GraphicSettings.AccentColor)
                 .AllowEmpty());
         
         try
@@ -327,11 +328,11 @@ class Process_management
             
             if (process != null)
             {
-                AnsiConsole.MarkupLine($"[DarkOrange]✓ Process started! ID: {process.Id}[/]");
+                AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]✓ Process started! ID: {process.Id}[/]");
             }
             else
             {
-                AnsiConsole.MarkupLine("[DarkOrange]✓ Process started (using ShellExecute).[/]");
+                AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]✓ Process started (using ShellExecute).[/]");
             }
         }
         catch (Exception ex)
@@ -349,8 +350,8 @@ class Process_management
             .Start("Loading system processes...", ctx =>
             {
                 ctx.Spinner(Spinner.Known.Dots);
-                ctx.SpinnerStyle(Style.Parse("white"));
-                Thread.Sleep(500);
+                ctx.SpinnerStyle(Style.Parse(GraphicSettings.AccentColor));
+                Thread.Sleep(150);
             });
         
         Process[] processes = Process.GetProcesses();
@@ -361,33 +362,33 @@ class Process_management
             .ThenBy(p => p.ProcessName);
         
         var table = new Table()
-            .Title($"[bold DarkOrange]System Processes: {systemProcesses.Count()}[/]")
-            .BorderColor(Color.White)
+            .Title($"[{GraphicSettings.SecondaryColor}]System Processes: {systemProcesses.Count()}[/]")
+            .BorderColor(Color.White) //ИСПРАВИТЬ
             .Border(TableBorder.HeavyHead)
-            .AddColumn(new TableColumn("[white]ID[/]"))
-            .AddColumn(new TableColumn("[white]Name[/]"))
-            .AddColumn(new TableColumn("[white]Priority[/]"))
-            .AddColumn(new TableColumn("[white]Memory (MB)[/]"));
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]ID[/]"))
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Name[/]"))
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Priority[/]"))
+            .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Memory (MB)[/]"));
         
         foreach (Process proc in systemProcesses)
         {
             try
             {
                 string memory = $"{proc.WorkingSet64 / 1024 / 1024:N0}";
-                string priorityColor = proc.BasePriority > 12 ? "red" : "yellow";
-                
+                string priorityColor = proc.BasePriority > 12 ? "red" : GraphicSettings.AccentColor;
+
                 table.AddRow(
                     $"{proc.Id}",
-                    $"[white]{proc.ProcessName}[/]",
+                    $"[{GraphicSettings.SecondaryColor}]{proc.ProcessName}[/]",
                     $"[{priorityColor}]{proc.BasePriority}[/]",
-                    $"[white]{memory}[/]");
+                    $"[{GraphicSettings.SecondaryColor}]{memory}[/]");
             }
             catch
             {
                 table.AddRow(
                     $"{proc.Id}",
-                    $"[white]{proc.ProcessName}[/]",
-                    $"[white]{proc.BasePriority}[/]",
+                    $"[{GraphicSettings.SecondaryColor}]{proc.ProcessName}[/]",
+                    $"[{GraphicSettings.SecondaryColor}]{proc.BasePriority}[/]",
                     "[red]N/A[/]");
             }
         }
@@ -403,18 +404,18 @@ class Process_management
         Console.Clear();
         
         int processId = AnsiConsole.Prompt(
-            new TextPrompt<int>("[DarkOrange]Enter process ID for details:[/]")
-                .PromptStyle("white")
+            new TextPrompt<int>($"[{GraphicSettings.SecondaryColor}]Enter process ID for details:[/]")
+                .PromptStyle(GraphicSettings.AccentColor)
                 .ValidationErrorMessage("[red]Invalid process ID![/]"));
         
         try
         {
             Process process = Process.GetProcessById(processId);
             
-            var panel = new Panel($"[bold DarkOrange]{process.ProcessName}[/] (ID: {process.Id})")
+            var panel = new Panel($"[{GraphicSettings.SecondaryColor}]{process.ProcessName}[/] (ID: {process.Id})")
             {
                 Border = BoxBorder.Double,
-                BorderStyle = new Style(Color.White),
+                BorderStyle = new Style(Color.White), //ИСПРАВИТЬ
                 Padding = new Padding(1, 1, 1, 1)
             };
             
@@ -429,26 +430,26 @@ class Process_management
             
             try
             {
-                infoTable.AddRow("[bold]Start Time:[/]", $"[white]{process.StartTime:yyyy-MM-dd HH:mm:ss}[/]");
-                infoTable.AddRow("[bold]Total CPU Time:[/]", $"[white]{process.TotalProcessorTime}[/]");
+                infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]Start Time:[/]", $"[{GraphicSettings.SecondaryColor}]{process.StartTime:yyyy-MM-dd HH:mm:ss}[/]");
+                infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]Total CPU Time:[/]", $"[{GraphicSettings.SecondaryColor}]{process.TotalProcessorTime}[/]");
             }
             catch
             {
-                infoTable.AddRow("[bold]Start Time:[/]", "[red]Access Denied[/]");
+                infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]Start Time:[/]", "[red]Access Denied[/]");
             }
             
-            infoTable.AddRow("[bold]Priority:[/]", $"[white]{process.BasePriority}[/]");
-            infoTable.AddRow("[bold]Responding:[/]", process.Responding ? "[green]Yes[/]" : "[red]No[/]");
-            infoTable.AddRow("[bold]Session ID:[/]", $"[white]{process.SessionId}[/]");
+            infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[white]{process.BasePriority}[/]");
+            infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", process.Responding ? "[green]Yes[/]" : "[red]No[/]");
+            infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[white]{process.SessionId}[/]");
             
             try
             {
-                infoTable.AddRow("[bold]Working Memory:[/]", $"[DarkOrange]{process.WorkingSet64 / 1024 / 1024:N0} MB[/]");
-                infoTable.AddRow("[bold]Private Memory:[/]", $"[DarkOrange]{process.PrivateMemorySize64 / 1024 / 1024:N0} MB[/]");
+                infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[DarkOrange]{process.WorkingSet64 / 1024 / 1024:N0} MB[/]");
+                infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[DarkOrange]{process.PrivateMemorySize64 / 1024 / 1024:N0} MB[/]");
             }
             catch
             {
-                infoTable.AddRow("[bold]Memory Info:[/]", "[red]Access Denied[/]");
+                infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", "[red]Access Denied[/]");
             }
             
             AnsiConsole.Write(infoTable);
@@ -459,10 +460,10 @@ class Process_management
                 var modules = process.Modules.Cast<ProcessModule>();
                 if (modules.Any())
                 {
-                    AnsiConsole.MarkupLine("\n[bold white]Top Modules:[/]");
+                    AnsiConsole.MarkupLine($"\n[{GraphicSettings.SecondaryColor}]Top Modules:[/]");
                     foreach (var module in modules)
                     {
-                        AnsiConsole.MarkupLine($"  [white]•[/] [white]{module.ModuleName}[/]");
+                        AnsiConsole.MarkupLine($"  [{GraphicSettings.SecondaryColor}]•[/] [{GraphicSettings.SecondaryColor}]{module.ModuleName}[/]");
                     }
                 }
             }
@@ -487,8 +488,8 @@ class Process_management
         Console.Clear();
         
         string fileName = AnsiConsole.Prompt(
-            new TextPrompt<string>("[white]Enter file name (without extension):[/]")
-                .PromptStyle("DarkOrange")
+            new TextPrompt<string>($"[{GraphicSettings.SecondaryColor}]Enter file name (without extension):[/]")
+                .PromptStyle(GraphicSettings.AccentColor)
                 .DefaultValue("process_list"));
         
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -518,9 +519,9 @@ class Process_management
             }
         }
         
-        AnsiConsole.MarkupLine($"[DarkOrange]✓ Process list exported to:[/] [DarkOrange]{filePath}[/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]✓ Process list exported to:[/] [{GraphicSettings.SecondaryColor}]{filePath}[/]");
         
-        if (AnsiConsole.Confirm("[white]Open the file?[/]", false))
+        if (AnsiConsole.Confirm($"[{GraphicSettings.SecondaryColor}]Open the file?[/]", false))
         {
             Process.Start("notepad.exe", filePath);
         }
@@ -533,7 +534,7 @@ class Process_management
         
         if (!AnsiConsole.Confirm("[red]This will attempt to kill all non-responding processes. Continue?[/]", false))
         {
-            AnsiConsole.MarkupLine("[DarkOrange]Operation cancelled.[/]");
+            AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Operation cancelled.[/]");
             return;
         }
         
@@ -544,7 +545,7 @@ class Process_management
         AnsiConsole.Progress()
             .Start(ctx =>
             {
-                var task = ctx.AddTask("[DarkOrange]Cleaning dead processes...[/]", maxValue: processes.Length);
+                var task = ctx.AddTask($"[{GraphicSettings.SecondaryColor}]Cleaning dead processes...[/]", maxValue: processes.Length);
                 
                 foreach (Process proc in processes)
                 {
@@ -560,7 +561,7 @@ class Process_management
                         {
                             proc.Kill();
                             cleanedCount++;
-                            AnsiConsole.MarkupLine($"[DarkOrange]✓ Cleaned: {proc.ProcessName} (ID: {proc.Id})[/]");
+                            AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]✓ Cleaned: {proc.ProcessName} (ID: {proc.Id})[/]");
                         }
                         catch
                         {
@@ -572,8 +573,8 @@ class Process_management
                 }
             });
         
-        AnsiConsole.MarkupLine($"[DarkOrange]Cleaning completed![/]");
-        AnsiConsole.MarkupLine($"[white]Cleaned processes: {cleanedCount}[/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.AccentColor}]Cleaning completed![/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Cleaned processes: {cleanedCount}[/]");
         AnsiConsole.MarkupLine($"[red]Failed to clean: {failedCount}[/]");
     }
     

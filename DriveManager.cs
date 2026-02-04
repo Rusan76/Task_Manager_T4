@@ -12,7 +12,7 @@ class DriveManager
         while (true)
         {
             AnsiConsole.Clear();
-            AnsiConsole.Write(new Rule("[DarkOrange]Менеджер Драйверов[/]").RuleStyle("white").LeftJustified());
+            AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]Менеджер Драйверов[/]").RuleStyle(GraphicSettings.AccentColor).LeftJustified());
 
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
@@ -43,15 +43,17 @@ class DriveManager
                 case "0": Console.Clear(); return;
             }
 
-            AnsiConsole.MarkupLine("\n[white]Нажмите любую клавишу для продолжения...[/]");
+            AnsiConsole.MarkupLine($"\n[{GraphicSettings.NeutralColor}]Нажмите любую клавишу для продолжения...[/]");
             Console.ReadKey();
         }
     }
 
     private static void ShowDriverTable(string query, string title, string color)
     {
-        var table = new Table().Border(TableBorder.Rounded);
-        table.Title($"[{color}]{title}[/]");
+        var table = new Table()
+                                .Border(TableBorder.Rounded);
+                                // .BorderColor(Color.FromName(GraphicSettings.AccentColor)); //Починить как-нибуудь потом
+        table.Title($"[{GraphicSettings.AccentColor}]{title}[/]");
         table.AddColumn("[bold]Устройство[/]");
         table.AddColumn("[bold]Версия[/]");
         table.AddColumn("[bold]Производитель[/]");
@@ -60,39 +62,26 @@ class DriveManager
         {
             AnsiConsole.Status().Start("Опрашиваю систему...", ctx => 
             {
-#pragma warning disable CA1416 // Проверка совместимости платформы
-                using var searcher = new ManagementObjectSearcher(query);
-#pragma warning restore CA1416 // Проверка совместимости платформы
-#pragma warning disable CA1416 // Проверка совместимости платформы
-                var results = searcher.Get().Cast<ManagementObject>().ToList();
-#pragma warning restore CA1416 // Проверка совместимости платформы
 
-#pragma warning disable CA1416 // Проверка совместимости платформы
+                using var searcher = new ManagementObjectSearcher(query);
+                var results = searcher.Get().Cast<ManagementObject>().ToList();
                 if (results.Count == 0)
                 {
                     table.AddRow("[white]Ничего не найдено[/]", "-", "-");
                     return;
                 }
-#pragma warning restore CA1416 // Проверка совместимости платформы
 
                 foreach (var obj in results)
                 {
                     // Пробуем FriendlyName (понятное имя), если нет - DeviceName или Caption
-#pragma warning disable CA1416 // Проверка совместимости платформы
+
                     string name = Markup.Escape(
                         obj["FriendlyName"]?.ToString() ?? 
                         obj["DeviceName"]?.ToString() ?? 
                         obj["Caption"]?.ToString() ?? "Неизвестно"
                     );
-#pragma warning restore CA1416 // Проверка совместимости платформы
-
-#pragma warning disable CA1416 // Проверка совместимости платформы
                     string version = Markup.Escape(obj["DriverVersion"]?.ToString() ?? "Н/Д");
-#pragma warning restore CA1416 // Проверка совместимости платформы
-#pragma warning disable CA1416 // Проверка совместимости платформы
                     string manufacturer = Markup.Escape(obj["Manufacturer"]?.ToString() ?? "Н/Д");
-#pragma warning restore CA1416 // Проверка совместимости платформы
-
                     table.AddRow(name, version, manufacturer);
                 }
             });

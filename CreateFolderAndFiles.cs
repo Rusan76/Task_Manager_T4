@@ -2,21 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Spectre.Console;
+using Task_Manager_T4;
 
 class MainFF
 {
+
     public static void PrintFunctions()
     {
         AnsiConsole.Clear();
-        AnsiConsole.Write(new Rule("[DarkOrange]File and folder manager[/]").RuleStyle("white").LeftJustified());
+        AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]File and folder manager[/]").RuleStyle(GraphicSettings.AccentColor).LeftJustified());
+        
         var user_choice = AnsiConsole.Prompt(
-         new SelectionPrompt<string>()
-             .PageSize(12)
-             .AddChoices([
-                "Перейти к папкам",
-                "Перейти к файлам",
-                "Назад"
-             ]));
+            new SelectionPrompt<string>()
+                .PageSize(GraphicSettings.PageSize)
+                .AddChoices([
+                    "Перейти к папкам",
+                    "Перейти к файлам",
+                    "Назад"
+                ]));
+                
         switch (user_choice)
         {
             case "Перейти к папкам":
@@ -37,27 +41,32 @@ class Folders
     public static void Main_Menu_Folder()
     {
         AnsiConsole.Clear();
-        AnsiConsole.Write(new Rule("[DarkOrange]Менеджер папок[/]").RuleStyle("white").LeftJustified());
+        AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]Менеджер папок[/]").RuleStyle(GraphicSettings.AccentColor).LeftJustified());
+        
         var choice = AnsiConsole.Prompt(
-         new SelectionPrompt<string>()
-             .Title("[DarkOrange]Что вы хотите сделать с папками?[/]")
-             .PageSize(12)
-             .AddChoices([
-                "Создать папку",
-                "Удалить папку",
-                "Информация о папках",
-                "Назад"
-             ]));
+            new SelectionPrompt<string>()
+                .Title($"[{GraphicSettings.SecondaryColor}]Что вы хотите сделать с папками?[/]")
+                .PageSize(GraphicSettings.PageSize)
+                .AddChoices([
+                    "Создать папку",
+                    "Удалить папку",
+                    "Информация о папках",
+                    "Назад"
+                ]));
+                
         switch (choice)
         {
             case "Создать папку":
                 CreateFolder();
+                Console.Clear();
                 break;
             case "Удалить папку":
                 DeleteFolder(AskCustomPath());
+                Console.Clear();
                 break;
             case "Информация о папках":
                 CountAllFoldersSafe(AskCustomPath());
+                Console.Clear();
                 break;
             case "Назад":
                 MainFF.PrintFunctions();
@@ -69,9 +78,8 @@ class Folders
     {
         int count = 0;
 
-
         AnsiConsole.Status()
-            .Start("Сканирование папок... это может занять время", ctx =>
+            .Start($"[{GraphicSettings.AccentColor}]Сканирование папок... это может занять время[/]", ctx =>
             {
                 Stack<string> stack = new();
                 stack.Push(path);
@@ -81,14 +89,13 @@ class Folders
                     string currentDir = stack.Pop();
                     try
                     {
-
                         string[] subDirs = Directory.GetDirectories(currentDir);
                         foreach (string str in subDirs)
                         {
                             stack.Push(str);
                             count++;
                         }
-                        ctx.Status($"Найдено папок: {count}...");
+                        ctx.Status($"[{GraphicSettings.NeutralColor}]Найдено папок: {count}...[/]");
                     }
                     catch (UnauthorizedAccessException) { continue; }
                     catch (DirectoryNotFoundException) { continue; }
@@ -96,31 +103,29 @@ class Folders
                 }
             });
 
-        AnsiConsole.MarkupLine($"\n[bold]Готово![/] [bold cyan]Общее количество доступных папок в {path}:[/] {count}");
-        Console.WriteLine("Нажмите любую клавишу...");
+        AnsiConsole.MarkupLine($"\n[{GraphicSettings.SecondaryColor}]Готово![/] [{GraphicSettings.SecondaryColor}]Общее количество доступных папок в {path}:[/] {count}");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]Нажмите любую клавишу...[/]");
         Console.ReadKey();
     }
 
     public static void DeleteFolder(string path)
     {
-
-        if (!AnsiConsole.Confirm($"[red]Вы уверены, что хотите удалить папку и всё её содержимое:[/] {Markup.Escape(path)}?"))
+        if (!AnsiConsole.Confirm($"[{GraphicSettings.SecondaryColor}]Вы уверены, что хотите удалить папку и всё её содержимое:[/] {Markup.Escape(path)}?"))
         {
             return;
         }
 
         try
         {
-
             Directory.Delete(path, true);
-            AnsiConsole.MarkupLine("[bold][+] Папка успешно удалена.[/]");
+            AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}][+] Папка успешно удалена.[/]");
         }
         catch (Exception ex)
         {
             AnsiConsole.MarkupLine($"[red][ERROR] Не удалось удалить папку:[/] {Markup.Escape(ex.Message)}");
         }
 
-        Console.WriteLine("Нажмите любую клавишу...");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]Нажмите любую клавишу...[/]");
         Console.ReadKey();
     }
 
@@ -128,10 +133,9 @@ class Folders
     {
         string basePath = "";
 
-
         var menuChoice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("[DarkOrange]Выберите расположение для новой папки:[/]")
+                .Title($"[{GraphicSettings.SecondaryColor}]Выберите расположение для новой папки:[/]")
                 .AddChoices([
                     "Рабочий стол",
                     "Документы",
@@ -160,21 +164,18 @@ class Folders
 
         if (string.IsNullOrEmpty(basePath)) return;
 
-
         string folderName = AskFolderName();
 
         if (!string.IsNullOrEmpty(folderName))
         {
-
             CreateReportFolder(basePath, folderName);
         }
     }
 
-
     protected static string AskCustomPath(bool isFile = false)
     {
         return AnsiConsole.Prompt(
-            new TextPrompt<string>($"[DarkOrange]Введите полный путь к {(isFile ? "файлу" : "директории")}:[/]")
+            new TextPrompt<string>($"[{GraphicSettings.SecondaryColor}]Введите полный путь к {(isFile ? "файлу" : "директории")}:[/]")
                 .Validate(path =>
                 {
                     if (isFile)
@@ -191,7 +192,7 @@ class Folders
     private static string AskFolderName()
     {
         return AnsiConsole.Prompt(
-            new TextPrompt<string>("[bold]Введите имя для новой папки:[/]")
+            new TextPrompt<string>($"[{GraphicSettings.SecondaryColor}]Введите имя для новой папки:[/]")
                 .AllowEmpty());
     }
 
@@ -204,11 +205,11 @@ class Folders
             if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
-                AnsiConsole.MarkupLine($"[DarkOrange][+] Папка успешно создана:[/] [white]{Markup.Escape(folderPath)}[/]");
+                AnsiConsole.MarkupLine($"[{GraphicSettings.AccentColor}][+] Папка успешно создана:[/] [{GraphicSettings.SecondaryColor}]{Markup.Escape(folderPath)}[/]");
             }
             else
             {
-                AnsiConsole.MarkupLine($"[red][!] Папка уже существует:[/] [white]{Markup.Escape(folderPath)}[/]");
+                AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}][!] Папка уже существует:[/] [{GraphicSettings.SecondaryColor}]{Markup.Escape(folderPath)}[/]");
             }
         }
         catch (Exception ex)
@@ -216,7 +217,7 @@ class Folders
             AnsiConsole.MarkupLine($"[red][ERROR] Ошибка при создании:[/] {Markup.Escape(ex.Message)}");
         }
 
-        AnsiConsole.MarkupLine("\n[white]Нажмите любую клавишу для продолжения...[/]");
+        AnsiConsole.MarkupLine($"\n[{GraphicSettings.NeutralColor}]Нажмите любую клавишу для продолжения...[/]");
         Console.ReadKey();
     }
 }
@@ -226,38 +227,46 @@ class Files() : Folders
     public static void Main_Menu_Files()
     {
         AnsiConsole.Clear();
-        AnsiConsole.Write(new Rule("[DarkOrange]Файлы[/]").RuleStyle("white").LeftJustified());
+        AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]Файлы[/]").RuleStyle(GraphicSettings.AccentColor).LeftJustified());
+        
         var fileChoice = AnsiConsole.Prompt(
-         new SelectionPrompt<string>()
-             .Title("[DarkOrange]Что вы хотите сделать с файлами?[/]")
-             .PageSize(12)
-             .AddChoices([
-                "Информация о файле",
-                "Найти файл",
-                "Количество файлов в папке",
-                "Создать новый файл",
-                "Удалить файл",
-                "Назад"
-             ]));
+            new SelectionPrompt<string>()
+                .Title($"[{GraphicSettings.SecondaryColor}]Что вы хотите сделать с файлами?[/]")
+                .PageSize(GraphicSettings.PageSize)
+                .AddChoices([
+                    "Информация о файле",
+                    "Найти файл",
+                    "Количество файлов в папке",
+                    "Создать новый файл",
+                    "Удалить файл",
+                    "Назад"
+                ]));
+                
         switch (fileChoice)
         {
             case "Информация о файле":
                 FileInfo();
+                Console.Clear();
                 break;
             case "Найти файл":
                 FindFile(AskCustomPath());
+                Console.Clear();
                 break;
             case "Количество файлов в папке":
                 CountFiles(AskCustomPath());
+                Console.Clear();
                 break;
             case "Создать новый файл":
                 CreateFile(AskCustomPath());
+                Console.Clear();
                 break;
             case "Удалить файл":
                 DeleteFile(AskCustomPath(isFile: true));
+                Console.Clear();
                 break;
             case "Назад":
                 MainFF.PrintFunctions();
+                Console.Clear();
                 break;
         }
     }
@@ -265,13 +274,14 @@ class Files() : Folders
     private static void FindFile(string path)
     {
         var FindFile = AnsiConsole.Prompt(
-         new SelectionPrompt<string>()
-             .Title("[DarkOrange]Найти файл по расширению или по имени[/]")
-             .PageSize(12)
-             .AddChoices([
-                "По имени",
-                "По расширении"
-             ]));
+            new SelectionPrompt<string>()
+                .Title($"[{GraphicSettings.SecondaryColor}]Найти файл по расширению или по имени[/]")
+                .PageSize(GraphicSettings.PageSize)
+                .AddChoices([
+                    "По имени",
+                    "По расширении"
+                ]));
+                
         switch (FindFile)
         {
             case "По имени":
@@ -285,25 +295,23 @@ class Files() : Folders
 
     private static void FindFileByName(string path)
     {
-
-        AnsiConsole.Markup("[white]Введите имя файла или его часть:[/] ");
+        AnsiConsole.Markup($"[{GraphicSettings.SecondaryColor}]Введите имя файла или его часть:[/] ");
         string fileName = Console.ReadLine()?.Trim();
 
         if (string.IsNullOrEmpty(fileName)) return;
 
-        // Шаблон *имя* позволит найти файл, даже если введено не полное название
         string searchPattern = $"*{fileName}*";
 
         try
         {
             AnsiConsole.Status()
-                .Start($"Поиск '{fileName}'...", ctx =>
+                .Start($"[{GraphicSettings.NeutralColor}]Поиск '{fileName}'...[/]", ctx =>
                 {
                     var files = Directory.EnumerateFiles(path, searchPattern, SearchOption.AllDirectories);
 
                     foreach (string file in files)
                     {
-                        AnsiConsole.MarkupLine($"[DarkOrange][[match]][/] {Markup.Escape(file)}");
+                        AnsiConsole.MarkupLine($"[{GraphicSettings.AccentColor}][[match]][/] [{GraphicSettings.SecondaryColor}]{Markup.Escape(file)}[/]");
                     }
                 });
         }
@@ -311,18 +319,18 @@ class Files() : Folders
         {
             AnsiConsole.MarkupLine($"[red]Ошибка:[/] {e.Message}");
         }
-        AnsiConsole.MarkupLine("\n[white]Нажмите любую клавишу...[/]");
+        
+        AnsiConsole.MarkupLine($"\n[{GraphicSettings.NeutralColor}]Нажмите любую клавишу...[/]");
         Console.ReadKey();
     }
 
     private static void FindFileByExtension(string path)
     {
-        AnsiConsole.Markup("[bold white]Введите расширение (например, exe или .txt):[/] ");
+        AnsiConsole.Markup($"[{GraphicSettings.SecondaryColor}]Введите расширение (например, exe или .txt):[/] ");
         string extension = Console.ReadLine()?.Trim().ToLower();
 
         if (string.IsNullOrEmpty(extension)) return;
 
-        // Автоматически добавляем звездочку и точку, если их нет
         if (!extension.StartsWith("*."))
         {
             extension = extension.StartsWith(".") ? "*" + extension : "*." + extension;
@@ -331,40 +339,39 @@ class Files() : Folders
         try
         {
             AnsiConsole.Status()
-                .Start($"Поиск файлов {extension}...", ctx =>
+                .Start($"[{GraphicSettings.NeutralColor}]Поиск файлов {extension}...[/]", ctx =>
                 {
-                    // Используем безопасный перебор, чтобы не "упасть" на системных папках
                     var files = Directory.EnumerateFiles(path, extension, SearchOption.AllDirectories);
-
                     bool found = false;
+                    
                     foreach (string file in files)
                     {
-                        AnsiConsole.MarkupLine($"[white][[found]][/] {Markup.Escape(file)}");
+                        AnsiConsole.MarkupLine($"[{GraphicSettings.AccentColor}][[found]][/] [{GraphicSettings.SecondaryColor}]{Markup.Escape(file)}[/]");
                         found = true;
                     }
 
                     if (!found)
                     {
-                        AnsiConsole.MarkupLine("[red]Файлы с таким расширением не найдены.[/]");
+                        AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]Файлы с таким расширением не найдены.[/]");
                     }
                 });
         }
         catch (UnauthorizedAccessException)
         {
-            AnsiConsole.MarkupLine("[red]Ошибка: недостаточно прав для сканирования некоторых подпапок.[/]");
+            AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]Ошибка: недостаточно прав для сканирования некоторых подпапок.[/]");
         }
         catch (Exception e)
         {
             AnsiConsole.MarkupLine($"[red]Ошибка:[/] {e.Message}");
         }
 
-        AnsiConsole.MarkupLine("\n[grey]Нажмите любую клавишу...[/]");
+        AnsiConsole.MarkupLine($"\n[{GraphicSettings.NeutralColor}]Нажмите любую клавишу...[/]");
         Console.ReadKey();
     }
 
     private static void DeleteFile(string path)
     {
-        if (!AnsiConsole.Confirm($"[red]Удалить файл:[/] {Markup.Escape(path)}?"))
+        if (!AnsiConsole.Confirm($"[{GraphicSettings.AccentColor}]Удалить файл:[/] {Markup.Escape(path)}?"))
         {
             return;
         }
@@ -372,73 +379,66 @@ class Files() : Folders
         try
         {
             File.Delete(path);
-            AnsiConsole.MarkupLine("[DarkOrange][+] Файл успешно удален.[/]");
+            AnsiConsole.MarkupLine($"[{GraphicSettings.AccentColor}][+] Файл успешно удален.[/]");
         }
         catch (Exception ex)
         {
             AnsiConsole.MarkupLine($"[red][ERROR] Не удалось удалить файл:[/] {Markup.Escape(ex.Message)}");
         }
 
-        Console.WriteLine("Нажмите любую клавишу...");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]Нажмите любую клавишу...[/]");
         Console.ReadKey();
     }
 
     private static void CreateFile(string path)
     {
-
-        string fileName = AnsiConsole.Ask<string>("[bold white]Введите имя файла (без расширения):[/]");
-
+        string fileName = AnsiConsole.Ask<string>($"[{GraphicSettings.SecondaryColor}]Введите имя файла (без расширения):[/]");
 
         string extension = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("[DarkOrange]Выберите или введите расширение:[/]")
+                .Title($"[{GraphicSettings.AccentColor}]Выберите или введите расширение:[/]")
                 .AddChoices([".txt", ".json", ".log", ".md", "Свое расширение..."]));
 
         if (extension == "Свое расширение...")
         {
-            extension = AnsiConsole.Ask<string>("[bold white]Введите расширение (с точкой, например .cfg):[/]");
+            extension = AnsiConsole.Ask<string>($"[{GraphicSettings.SecondaryColor}]Введите расширение (с точкой, например .cfg):[/]");
         }
-
-
 
         if (!extension.StartsWith(".")) extension = "." + extension;
         string fullPath = Path.Combine(path, fileName + extension);
 
         try
         {
-
-            using (FileStream fs = File.Create(fullPath))
-            {
-
-            }
-            AnsiConsole.MarkupLine($"[bold white][+] Файл успешно создан:[/] {Markup.Escape(fullPath)}");
+            using (FileStream fs = File.Create(fullPath)) { }
+            AnsiConsole.MarkupLine($"[{GraphicSettings.AccentColor}][+] Файл успешно создан:[/] [{GraphicSettings.SecondaryColor}]{Markup.Escape(fullPath)}[/]");
         }
         catch (Exception ex)
         {
             AnsiConsole.MarkupLine($"[red][ERROR] Не удалось создать файл:[/] {Markup.Escape(ex.Message)}");
         }
 
-        Console.WriteLine("Нажмите любую клавишу...");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]Нажмите любую клавишу...[/]");
         Console.ReadKey();
     }
 
     private static void FileInfo()
     {
-
         string path = AskCustomPath(isFile: true);
         FileInfo info = new(path);
 
+        var table = new Table()
+            .Border(TableBorder.Rounded);
+            // .BorderColor(Color.FromName(GraphicSettings.AccentColor)); //Починить как-нибуудь потом
+            
+        table.AddColumn($"[{GraphicSettings.AccentColor}]Свойство[/]");
+        table.AddColumn($"[{GraphicSettings.AccentColor}]Значение[/]");
 
-        var table = new Table().Border(TableBorder.Rounded).BorderColor(Color.Blue);
-        table.AddColumn("[DarkOrange]Свойство[/]");
-        table.AddColumn("[DarkOrange]Значение[/]");
-
-        table.AddRow("Имя", info.Name);
-        table.AddRow("Размер", $"{info.Length / 1024.0:F2} KB");
-        table.AddRow("Создан", info.CreationTime.ToString("G"));
+        table.AddRow("Имя", $"[{GraphicSettings.SecondaryColor}]{info.Name}[/]");
+        table.AddRow("Размер", $"[{GraphicSettings.SecondaryColor}]{info.Length / 1024.0:F2} KB[/]");
+        table.AddRow("Создан", $"[{GraphicSettings.SecondaryColor}]{info.CreationTime:G}[/]");
 
         AnsiConsole.Write(table);
-        AnsiConsole.MarkupLine("\n[white]Нажмите любую клавишу...[/]");
+        AnsiConsole.MarkupLine($"\n[{GraphicSettings.NeutralColor}]Нажмите любую клавишу...[/]");
         Console.ReadKey();
     }
 
@@ -447,7 +447,7 @@ class Files() : Folders
         int count = 0;
 
         AnsiConsole.Status()
-            .Start("Сканирование файлов... это может занять время", ctx =>
+            .Start($"[{GraphicSettings.NeutralColor}]Сканирование файлов... это может занять время[/]", ctx =>
             {
                 Stack<string> stack = new();
                 stack.Push(path);
@@ -457,10 +457,8 @@ class Files() : Folders
                     string currentDir = stack.Pop();
                     try
                     {
-
                         string[] files = Directory.GetFiles(currentDir);
                         count += files.Length;
-
 
                         string[] subDirs = Directory.GetDirectories(currentDir);
                         foreach (string str in subDirs)
@@ -468,15 +466,15 @@ class Files() : Folders
                             stack.Push(str);
                         }
 
-                        ctx.Status($"Найдено файлов: {count}...");
+                        ctx.Status($"[{GraphicSettings.NeutralColor}]Найдено файлов: {count}...[/]");
                     }
                     catch (UnauthorizedAccessException) { continue; }
                     catch (DirectoryNotFoundException) { continue; }
                 }
             });
 
-        AnsiConsole.MarkupLine($"\n[bold white]Готово![/] [bold white]Общее количество файлов в {path}:[/] {count}");
-        Console.WriteLine("Нажмите любую клавишу...");
+        AnsiConsole.MarkupLine($"\n[{GraphicSettings.AccentColor}]Готово![/] [{GraphicSettings.SecondaryColor}]Общее количество файлов в {path}:[/] {count}");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]Нажмите любую клавишу...[/]");
         Console.ReadKey();
     }
 }

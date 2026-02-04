@@ -10,11 +10,11 @@ class SystemBenchmark
     public static void ShowBenchmarkMenu()
     {
         AnsiConsole.Clear();
-        AnsiConsole.Write(new Rule("[DarkOrange]System Performance Benchmark[/]").RuleStyle("white").LeftJustified());
+        AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]System Performance Benchmark[/]").RuleStyle(GraphicSettings.AccentColor).LeftJustified());
 
         var choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("Выберите тип теста:")
+                .Title($"[{GraphicSettings.SecondaryColor}]Выберите тип теста:[/]")
                 .AddChoices(["CPU Stress Test (Parallel)", "RAM Speed Test", "Назад"]));
 
         if (choice == "CPU Stress Test (Parallel)") RunCpuBenchmark();
@@ -24,7 +24,7 @@ class SystemBenchmark
 
     private static void RunCpuBenchmark()
     {
-        AnsiConsole.MarkupLine("[white]Запуск теста CPU... Все ядра будут нагружены на 5 секунд.[/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Запуск теста CPU... Все ядра будут нагружены на 5 секунд.[/]");
         
         Stopwatch sw = Stopwatch.StartNew();
         long operations = 0;
@@ -49,9 +49,9 @@ class SystemBenchmark
             });
 
         sw.Stop();
-        AnsiConsole.MarkupLine($"[DarkOrange]Тест завершен![/]");
-        AnsiConsole.MarkupLine($"Выполнено математических операций: [bold]{operations:N0}[/]");
-        AnsiConsole.MarkupLine($"Относительный балл (Ops/sec): [bold ]{operations / 5:N0}[/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Тест завершен![/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Выполнено математических операций:[/] [{GraphicSettings.SecondaryColor}]{operations:N0}[/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Относительный балл (Ops/sec):[/] [{GraphicSettings.SecondaryColor}]{operations / 5:N0}[/]");
         AnsiConsole.MarkupLine("Press any key to return.");
         Console.ReadLine();
         ShowBenchmarkMenu();
@@ -59,7 +59,7 @@ class SystemBenchmark
 
     private static void RunRamBenchmark()
     {
-        AnsiConsole.MarkupLine("[DarkOrange]Запуск теста RAM (Запись/Чтение 1 ГБ)...[/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Запуск теста RAM (Запись/Чтение 1 ГБ)...[/]");
 
         const int size = 1024 * 1024 * 256; 
         int[] array = new int[size];
@@ -73,8 +73,8 @@ class SystemBenchmark
                 sw.Stop();
             });
 
-        double writeSpeed = (1024.0) / sw.Elapsed.TotalSeconds; 
-        AnsiConsole.MarkupLine($"Скорость записи: [bold DarkOrange]{writeSpeed:F2} MB/s[/]");
+        double writeSpeed = 1024.0 / sw.Elapsed.TotalSeconds; 
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Скорость записи:[/] [{GraphicSettings.SecondaryColor}]{writeSpeed:F2} MB/s[/]");
 
         sw.Restart();
         AnsiConsole.Status()
@@ -86,7 +86,7 @@ class SystemBenchmark
             });
 
         double readSpeed = 1024.0 / sw.Elapsed.TotalSeconds;
-        AnsiConsole.MarkupLine($"Скорость чтения: [bold ]{readSpeed:F2} MB/s[/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Скорость чтения: {readSpeed:F2} MB/s[/]");
         
         
         array = null;
