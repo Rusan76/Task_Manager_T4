@@ -51,13 +51,12 @@ class DriveManager
     private static void ShowDriverTable(string query, string title, string color)
     {
         var table = new Table()
-                                .Border(TableBorder.Rounded);
-                                // .BorderColor(Color.FromName(GraphicSettings.AccentColor)); //Починить как-нибуудь потом
+                                .Border(TableBorder.Rounded)
+                                .BorderColor(GraphicSettings.GetThemeColor); 
         table.Title($"[{GraphicSettings.AccentColor}]{title}[/]");
         table.AddColumn("[bold]Устройство[/]");
         table.AddColumn("[bold]Версия[/]");
         table.AddColumn("[bold]Производитель[/]");
-
         try
         {
             AnsiConsole.Status().Start("Опрашиваю систему...", ctx => 
@@ -67,7 +66,7 @@ class DriveManager
                 var results = searcher.Get().Cast<ManagementObject>().ToList();
                 if (results.Count == 0)
                 {
-                    table.AddRow("[white]Ничего не найдено[/]", "-", "-");
+                    table.AddRow($"[{GraphicSettings.SecondaryColor}]Ничего не найдено[/]", "-", "-");
                     return;
                 }
 

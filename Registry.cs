@@ -70,7 +70,7 @@ class Management_Registry
                 var productName = winKey.GetValue("ProductName");
                 var displayVersion = winKey.GetValue("DisplayVersion");
 
-                var table = new Table().BorderColor(Color.Orange1).Border(TableBorder.Rounded); //dodelat'
+                var table = new Table().BorderColor(GraphicSettings.GetThemeColor).Border(TableBorder.Rounded); 
                 table.AddColumn($"[{GraphicSettings.SecondaryColor}]ПАРАМЕТР[/]");
                 table.AddColumn($"[{GraphicSettings.SecondaryColor}]ЗНАЧЕНИЕ[/]");
 
@@ -107,7 +107,7 @@ class Management_Registry
         if (key != null)
         {
             AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]Startup Apps (Registry)[/]").RuleStyle(GraphicSettings.AccentColor).LeftJustified());
-            var table = new Table().BorderColor(Color.Orange1); //dodelat'
+            var table = new Table().BorderColor(GraphicSettings.GetThemeColor); 
             table.AddColumn("App Name");
             table.AddColumn("Path");
 

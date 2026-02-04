@@ -81,7 +81,7 @@ class Process_management
             .Start("Loading processes...", ctx =>
             {
                 ctx.Spinner(Spinner.Known.Dots);
-                ctx.SpinnerStyle(Style.Parse("green"));
+                ctx.SpinnerStyle(Style.Parse(GraphicSettings.AccentColor));
                 Thread.Sleep(500);
             });
         
@@ -89,7 +89,7 @@ class Process_management
         
         var table = new Table()
             .Title($"[{GraphicSettings.SecondaryColor}]Running Processes: {runningProcesses.Length}[/]")
-            .BorderColor(Color.DarkOrange)
+            .BorderColor(GraphicSettings.GetThemeColor)
             .Border(TableBorder.Rounded)
             .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]ID[/]").Centered())
             .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Name[/]").LeftAligned())
@@ -119,7 +119,7 @@ class Process_management
                     $"[{GraphicSettings.SecondaryColor}]{proc.ProcessName}[/]",
                     $"[{GraphicSettings.SecondaryColor}]N/A[/]",
                     $"[{GraphicSettings.SecondaryColor}]N/A[/]",
-                    "[{GraphicSettings.SecondaryColor}]?[/]");
+                    $"[{GraphicSettings.SecondaryColor}]?[/]");
             }
         }
         
@@ -131,13 +131,13 @@ class Process_management
             .AddColumn(new GridColumn().PadRight(2))
             .AddColumn(new GridColumn())
             .AddRow(
-                new Panel($"[bold]{runningProcesses.Length}[/]\nTotal").BorderColor(Color.White), //исправить
+                new Panel($"[bold]{runningProcesses.Length}[/]\nTotal").BorderColor(GraphicSettings.GetThemeColor), //исправить
                 new Panel($"[bold]{runningProcesses.Count(p => 
                 {
                     try { return p.Responding; } 
                     catch { return false; }
                 })}[/]\nResponding").BorderColor(Color.White),
-                new Panel($"[bold]{runningProcesses.Count(p => p.BasePriority > 8)}[/]\nSystem").BorderColor(Color.White) //исрпавить
+                new Panel($"[bold]{runningProcesses.Count(p => p.BasePriority > 8)}[/]\nSystem").BorderColor(GraphicSettings.GetThemeColor) //исрпавить
             );
         
         AnsiConsole.Write(grid);
@@ -168,7 +168,7 @@ class Process_management
         
         var table = new Table()
             .Title($"[{GraphicSettings.AccentColor}]Found {processes.Length} processes[/]")
-            .BorderColor(Color.Green)
+            .BorderColor(GraphicSettings.GetThemeColor)
             .Border(TableBorder.Rounded)
             .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]ID[/]"))
             .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Name[/]"))
@@ -363,7 +363,7 @@ class Process_management
         
         var table = new Table()
             .Title($"[{GraphicSettings.SecondaryColor}]System Processes: {systemProcesses.Count()}[/]")
-            .BorderColor(Color.White) //ИСПРАВИТЬ
+            .BorderColor(GraphicSettings.GetThemeColor) 
             .Border(TableBorder.HeavyHead)
             .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]ID[/]"))
             .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Name[/]"))
@@ -415,7 +415,7 @@ class Process_management
             var panel = new Panel($"[{GraphicSettings.SecondaryColor}]{process.ProcessName}[/] (ID: {process.Id})")
             {
                 Border = BoxBorder.Double,
-                BorderStyle = new Style(Color.White), //ИСПРАВИТЬ
+                BorderStyle = new Style(GraphicSettings.GetThemeColor),
                 Padding = new Padding(1, 1, 1, 1)
             };
             
@@ -438,21 +438,21 @@ class Process_management
                 infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]Start Time:[/]", "[red]Access Denied[/]");
             }
             
-            infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[white]{process.BasePriority}[/]");
+            infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[{GraphicSettings.SecondaryColor}]{process.BasePriority}[/]");
             infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", process.Responding ? "[green]Yes[/]" : "[red]No[/]");
-            infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[white]{process.SessionId}[/]");
+            infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[{GraphicSettings.SecondaryColor}]{process.SessionId}[/]");
             
             try
             {
-                infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[DarkOrange]{process.WorkingSet64 / 1024 / 1024:N0} MB[/]");
-                infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[DarkOrange]{process.PrivateMemorySize64 / 1024 / 1024:N0} MB[/]");
+                infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[{GraphicSettings.SecondaryColor}]{process.WorkingSet64 / 1024 / 1024:N0} MB[/]");
+                infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", $"[{GraphicSettings.SecondaryColor}]{process.PrivateMemorySize64 / 1024 / 1024:N0} MB[/]");
             }
             catch
             {
                 infoTable.AddRow($"[{GraphicSettings.SecondaryColor}]:[/]", "[red]Access Denied[/]");
             }
             
-            AnsiConsole.Write(infoTable);
+            AnsiConsole.Write(infoTable.BorderColor(GraphicSettings.GetThemeColor));
             
             
             try

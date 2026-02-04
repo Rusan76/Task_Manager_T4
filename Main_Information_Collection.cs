@@ -107,7 +107,7 @@ public class GetInfoPc
                 $"Processors: [{GraphicSettings.SecondaryColor}]{Environment.ProcessorCount}[/]\n" +
                 $"Admin: [{GraphicSettings.SecondaryColor}]{(IsUserAdministrator() ? "Yes" : "No")}[/]\n" +
                 $"Uptime: [{GraphicSettings.SecondaryColor}]{TimeSpan.FromMilliseconds(Environment.TickCount):dd\\.hh\\:mm\\:ss}[/]")
-                .BorderColor(Color.Green)
+                .BorderColor(GraphicSettings.GetThemeColor)
                 .Padding(1, 1);
 
             string cpuInfo = "Not available";
@@ -126,7 +126,7 @@ public class GetInfoPc
                 $"GPU: [{GraphicSettings.SecondaryColor}]{gpuInfo}[/]\n" +
                 $"64-bit OS: [{GraphicSettings.SecondaryColor}]{(Environment.Is64BitOperatingSystem ? "Yes" : "No")}[/]\n" +
                 $".NET: [{GraphicSettings.SecondaryColor}]{Environment.Version}[/]")
-                .BorderColor(Color.DarkOrange)
+                .BorderColor(GraphicSettings.GetThemeColor)
                 .Padding(1, 1);
 
             grid.AddRow(generalInfo, hardwareInfo);
@@ -191,6 +191,7 @@ public class GetInfoPc
             var table = new Table()
                 .Title($"[{GraphicSettings.AccentColor}]Storage Drives[/]")
                 .Border(TableBorder.Simple)
+                .BorderColor(GraphicSettings.GetThemeColor)
                 .AddColumn($"[{GraphicSettings.SecondaryColor}]Drive[/]")
                 .AddColumn($"[{GraphicSettings.SecondaryColor}]Label[/]")
                 .AddColumn($"[{GraphicSettings.SecondaryColor}]Type[/]")
@@ -442,7 +443,7 @@ public class GetInfoPc
             AnsiConsole.Write(root);
 
             AnsiConsole.WriteLine();
-            AnsiConsole.Write(new Rule($"[{GraphicSettings.NeutralColor}]Press any key to continue...[/]").RuleStyle(GraphicSettings.SecondaryColor).Centered());
+            AnsiConsole.Write(new Rule($"[{GraphicSettings.NeutralColor}]Press any key to continue...[/]").RuleStyle(GraphicSettings.SecondaryColor).LeftJustified());
 
             Console.ReadKey();
 
@@ -492,6 +493,7 @@ public class GetInfoPc
         var table = new Table()
             .Title($"[{GraphicSettings.AccentColor}]Storage Drives[/]")
             .Border(TableBorder.Rounded)
+            .BorderColor(GraphicSettings.GetThemeColor)
             .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Drive[/]").Centered())
             .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Label[/]").LeftAligned())
             .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Type[/]").Centered())

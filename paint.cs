@@ -143,10 +143,9 @@ public class Rain
 
     var panel = new Panel(content)
         .Header($"[{GraphicSettings.AccentColor}] INFO [/]")
-        .BorderColor(Color.DarkOrange)
+        .BorderColor(GraphicSettings.GetThemeColor)
         .RoundedBorder()
-        .Expand(); // Растянуть на всю ширину
-
+        .Expand(); 
     AnsiConsole.Write(panel);
     AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]Press any key[/]").RuleStyle(GraphicSettings.AccentColor));
     Console.ReadKey();

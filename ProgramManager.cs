@@ -103,7 +103,7 @@ class ProgramManager
         Console.Clear();
         AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]INSTALLED_SOFTWARE_LIST[/]").RuleStyle(GraphicSettings.AccentColor).LeftJustified());
 
-        var table = new Table().BorderColor(Spectre.Console.Color.Orange1).Border(TableBorder.Rounded); //ИСПРАВИТЬ
+        var table = new Table().BorderColor(GraphicSettings.GetThemeColor).Border(TableBorder.Rounded); 
         table.AddColumn($"[{GraphicSettings.SecondaryColor}]ПРОГРАММА[/]");
         table.AddColumn($"[{GraphicSettings.SecondaryColor}]ИЗДАТЕЛЬ[/]");
         table.AddColumn($"[{GraphicSettings.SecondaryColor}]ДАТА[/]");

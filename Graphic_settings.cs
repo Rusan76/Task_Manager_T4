@@ -58,7 +58,7 @@ public class GraphicSettings
                 return;
         }
 
-        AnsiConsole.MarkupLine($"[green]Тема '{ThemeName}' успешно применена![/]");
+        AnsiConsole.MarkupLine($"[{SecondaryColor}]Тема '{ThemeName}' успешно применена![/]");
         Console.ReadKey();
     }
 
@@ -80,5 +80,19 @@ public class GraphicSettings
             "grey35" => Color.Grey35,
             _ => Color.White
         };
+    }
+    public static Color GetThemeColor
+    {
+        get
+        {
+            return AccentColor switch
+            {
+                "orange1" => Color.Orange1,
+                "green3" => Color.Green3,
+                "dodgerblue1" => Color.DodgerBlue1,
+                "black" => Color.Black,
+                _ => Color.White // Цвет по умолчанию
+            };
+        }
     }
 }

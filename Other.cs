@@ -579,7 +579,7 @@ public class Other
                         $"[{GraphicSettings.SecondaryColor}]Account Created:[/] [white]{user.Context.ConnectedServer ?? "N/A"}[/]")
                     {
                         Border = BoxBorder.Rounded,
-                        BorderStyle = new Style(Color.DarkOrange), //dodelat'
+                        BorderStyle = new Style(GraphicSettings.GetThemeColor), //dodelat'
                         Padding = new Padding(1, 1, 1, 1)
                     };
 
@@ -637,7 +637,7 @@ public class Other
                     var row = new List<string>();
                     for (int j = 0; j < 3 && i + j < groups.Count; j++)
                     {
-                        row.Add($"[white]•[/] {groups[i + j]}");
+                        row.Add($"[{GraphicSettings.SecondaryColor}]•[/] {groups[i + j]}");
                     }
                     grid.AddRow(row.ToArray());
                 }
@@ -690,16 +690,16 @@ public class Other
     private static void ShowAdminWarning()
     {
         var panel = new Panel(
-            "[bold red]⚠  ADMINISTRATOR RIGHTS REQUIRED[/]\n\n" +
-            "[DarkOrange]This feature requires administrator privileges.[/]\n" +
-            "[white]Please run the program as Administrator.[/]\n\n" +
-            "[DarkOrange]To run as Administrator:[/]\n" +
-            "1. Right-click the program\n" +
-            "2. Select 'Run as administrator'\n" +
-            "3. Confirm UAC prompt")
+            $"[red]⚠  ADMINISTRATOR RIGHTS REQUIRED[/]\n\n" +
+            $"[{GraphicSettings.SecondaryColor}]This feature requires administrator privileges.[/]\n" +
+            $"[{GraphicSettings.SecondaryColor}]Please run the program as Administrator.[/]\n\n" +
+            $"[{GraphicSettings.SecondaryColor}]To run as Administrator:[/]\n" +
+            $"1. Right-click the program\n" +
+            $"2. Select 'Run as administrator'\n" +
+            $"3. Confirm UAC prompt")
         {
             Border = BoxBorder.Double,
-            BorderStyle = new Style(Color.Orange1), //dodelat'
+            BorderStyle = new Style(GraphicSettings.GetThemeColor), //dodelat'
             Padding = new Padding(2, 1, 2, 1)
         };
 

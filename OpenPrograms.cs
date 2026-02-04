@@ -459,7 +459,7 @@ class OpenProgram
         
         AnsiConsole.Write(
             new Panel($"[{GraphicSettings.SecondaryColor}]Custom File Launcher[/]")
-                .BorderColor(Color.DarkOrange) //dodelat'
+                .BorderColor(GraphicSettings.GetThemeColor) 
                 .Padding(1, 1, 1, 1));
         
         var choice = AnsiConsole.Prompt(
@@ -608,7 +608,7 @@ class OpenProgram
         
         AnsiConsole.Write(
             new Panel($"[{GraphicSettings.SecondaryColor}]{command} {arguments}[/]")
-                .BorderColor(Color.White)
+                .BorderColor(GraphicSettings.GetThemeColor)
                 .Padding(1, 1, 1, 1));
         
         try
@@ -627,7 +627,7 @@ class OpenProgram
             
 
             var table = new Table()
-                .BorderColor(Color.White)
+                .BorderColor(GraphicSettings.GetThemeColor)
                 .Border(TableBorder.HeavyEdge)
                 .AddColumn(new TableColumn($"[{GraphicSettings.NeutralColor}]Output[/]").LeftAligned());
             
