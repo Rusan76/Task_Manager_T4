@@ -15,7 +15,7 @@ public class ServiceManagerUI
         {
             Console.Clear();
             
-            AnsiConsole.Write(new Rule($"[{GraphicSettings.AccentColor}]Service Manager[/]").RuleStyle(GraphicSettings.SecondaryColor).LeftJustified());
+            AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]Service Manager[/]").RuleStyle(GraphicSettings.AccentColor).LeftJustified());
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title($"[{GraphicSettings.SecondaryColor}]Select category[/]")
@@ -94,7 +94,7 @@ public class ServiceManagerUI
             {
                 string status = GetStatusColor(service.Status);
                 string type = GetServiceType(service.ServiceType);
-                string canStop = service.CanStop ? "[green]YES[/]" : "[red] NO[/]";
+                string canStop = service.CanStop ? $"[{GraphicSettings.AccentColor}]YES[/]" : "[red] NO[/]";
 
                 table.AddRow(
                     $"[{GraphicSettings.SecondaryColor}]{Ellipsis(service.ServiceName, 20)}[/]",
@@ -169,7 +169,7 @@ public class ServiceManagerUI
             
             foreach (var service in stoppedServices)
             {
-                string canStart = service.Status == ServiceControllerStatus.Stopped ? "[green]✓[/]" : "[red]✗[/]";
+                string canStart = service.Status == ServiceControllerStatus.Stopped ? $"[{GraphicSettings.AccentColor}]✓[/]" : "[red]✗[/]";
 
                 table.AddRow(
                     $"[{GraphicSettings.SecondaryColor}]{Ellipsis(service.ServiceName, 20)}[/]",

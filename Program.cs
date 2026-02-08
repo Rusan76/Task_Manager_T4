@@ -79,10 +79,10 @@ internal class Program
                         "🌡️ Check Temperature",
                         "🔩 Benchmark",
                         "🚀 Program Launcher",
-                        // "📸 Screenshot Tool",
                         "File and folder manager",
                         "Program Manager",
                         "Network",
+                        "Windows Optimization",
                         "❔ Other",
                         "Graphic Settings",
                         "🎨 OpenMe",
@@ -91,15 +91,15 @@ internal class Program
 
             switch (choice)
             {
+                case "Windows Optimization":
+                    WindowsOptimization.MainMenuOptimization();
+                    break;
                 case "📊 Process Management":
                     Process_management.GetProcces();
                     break;
                 case "💻 System Information":
                     GetInfoPc.Main_Information_Collection();
                     break;
-                // case "📸 Screenshot Tool":
-                //     GetInfoPc.TakeScreenshotMenu();
-                //     break;
                 case "🚀 Program Launcher":
                     OpenProgram.OpenPrograms();
                     break;
@@ -173,8 +173,6 @@ internal class Program
         var table = new Table
         {
             Border = TableBorder.Rounded
-
-
         };
 
         table.AddColumn(new TableColumn("[bold]Time[/]").Centered());

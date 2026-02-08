@@ -679,7 +679,7 @@ public class Other
         }
     }
 
-    private static bool IsRunningAsAdmin()
+    protected static bool IsRunningAsAdmin()
     {
         using var identity = WindowsIdentity.GetCurrent();
         var principal = new WindowsPrincipal(identity);
@@ -687,7 +687,7 @@ public class Other
         return principal.IsInRole(WindowsBuiltInRole.Administrator);
     }
 
-    private static void ShowAdminWarning()
+    protected static void ShowAdminWarning()
     {
         var panel = new Panel(
             $"[red]⚠  ADMINISTRATOR RIGHTS REQUIRED[/]\n\n" +

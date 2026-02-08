@@ -5,7 +5,7 @@ namespace Task_Manager_T4;
 
 public class GraphicSettings
 {
-    public const string AppVersion = "V1.3.1";
+    public const string AppVersion = "V1.3.5";
     public static int PageSize = 12;
     public static string AccentColor = "orange1";  //MainColor
     public static string SecondaryColor = "white"; //SecondColorForText

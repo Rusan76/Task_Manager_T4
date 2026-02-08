@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Spectre.Console;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace Task_Manager_T4;
 
@@ -45,6 +46,7 @@ public class NetWork
                     "Show Process Network Table",
                     "test001",
                     "test002",
+                    "test003",
                     "return"
                     ]));
 
@@ -70,12 +72,86 @@ public class NetWork
                     Test002();
                     Console.Clear();
                     break;
+                case "test003":
+                    Test003();
+                    Console.Clear();
+                    break;
                 case "return":
                     await Program.Function_list();
                     break;
             }
         }
     }
+
+    private static void Test003()
+    {
+        string FirstSite = "https://google.com"; //tut site dlya testa
+        Console.Clear();
+        AnsiConsole.Write(new Rule($"[{GraphicSettings.AccentColor}]Internet Speed Test[/]").RuleStyle(GraphicSettings.SecondaryColor).LeftJustified());
+        AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]This method does not display real data.[/]");
+        AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]Testing connection speed... Press ESC to exit[/]");
+        AnsiConsole.WriteLine();
+
+        Console.CancelKeyPress += (sender, e) => e.Cancel = true;
+        Console.TreatControlCAsInput = true;
+
+        while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
+        {
+            double speedMbps = MeasureSpeedMbps(FirstSite);
+            double speedMBps = speedMbps / 8; 
+
+            var liveTable = new Table()
+                .Border(TableBorder.Rounded)
+                .BorderColor(GraphicSettings.GetColor(GraphicSettings.AccentColor))
+                .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Metric[/]").Centered())
+                .AddColumn(new TableColumn($"[{GraphicSettings.SecondaryColor}]Value[/]").RightAligned());
+            liveTable.AddRow(
+                $"[{GraphicSettings.AccentColor}]Download[/]",
+                $"[{GraphicSettings.SecondaryColor}]{speedMbps:F2} Mbps[/]"
+            );
+
+            liveTable.AddRow(
+                $"[{GraphicSettings.AccentColor}]Download[/]",
+                $"[{GraphicSettings.SecondaryColor}]{speedMBps:F2} MB/s[/]"
+            );
+
+            Console.Clear();
+            AnsiConsole.Write(new Rule($"[{GraphicSettings.AccentColor}]Internet Speed Test[/]").RuleStyle(GraphicSettings.SecondaryColor).LeftJustified());
+            AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]Testing connection speed... Press ESC to exit[/]");
+            AnsiConsole.MarkupLine($"[{GraphicSettings.NeutralColor}]This method does not display real data.[/]");
+            AnsiConsole.WriteLine();
+            AnsiConsole.Write(liveTable);
+
+            Thread.Sleep(1000); //tut chastota obnovleniya (1 secunda)
+        }
+
+        Console.Clear();
+    }
+
+    private static double MeasureSpeedMbps(string url)
+    {
+        try
+        {
+            using HttpClient client = new();
+            client.Timeout = TimeSpan.FromSeconds(10);
+
+            DateTime startTime = DateTime.Now;
+
+            byte[] data = client.GetByteArrayAsync(url).Result;
+
+            DateTime endTime = DateTime.Now;
+            TimeSpan duration = endTime - startTime;
+
+            double speedMbps = data.Length * 8 / (1024.0 * 1024.0) / duration.TotalSeconds;
+
+            return speedMbps;
+        }
+        catch (Exception)
+        {
+            return 0; 
+        }
+    }
+
 
     private static void Test002()
     {
@@ -131,7 +207,7 @@ public class NetWork
         AnsiConsole.MarkupLine($"\n[{GraphicSettings.NeutralColor}]Press any key to continue...[/]");
         Console.ReadKey();
     }
-    private static async Task Test001Async() //ниче не понимаю
+    private static async Task Test001Async() 
     {
         Console.Clear();
         AnsiConsole.MarkupLine($"[{GraphicSettings.SecondaryColor}]Enter hostname to resolve:[/]");

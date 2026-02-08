@@ -9,6 +9,7 @@ using System.Linq;
 using Spectre.Console;
 using System.Net.NetworkInformation;
 using System.Net;
+using System.Collections.Generic;
 
 namespace Task_Manager_T4;
 
@@ -43,29 +44,6 @@ public class GetInfoPc
 
     [DllImport("user32.dll")]
     private static extern int GetSystemMetrics(int nIndex);
-
-    static string GetHardwareInfo(string win32Class, string classProperty)
-    {
-        string result = "";
-        try
-        {
-            ManagementObjectSearcher searcher = new($"SELECT {classProperty} FROM {win32Class}");
-            foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
-            {
-                string value = obj[classProperty]?.ToString() ?? "";
-
-                value = value.Replace("[", "\\[").Replace("]", "\\]");
-                result += value + Environment.NewLine;
-            }
-        }
-        catch (Exception ex)
-        {
-            result = $"Ошибка получения данных: {ex.Message.Replace("[", "\\[").Replace("]", "\\]")}";
-        }
-
-        result = result.Trim();
-        return string.IsNullOrEmpty(result) ? "Данные не найдены" : result;
-    }
 
     static bool IsUserAdministrator()
     {
@@ -262,7 +240,7 @@ public class GetInfoPc
                 sw.WriteLine("=== HARDWARE INFO ===");
                 try
                 {
-            
+
                     sw.WriteLine("[CPU]");
                     using (var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor"))
                     {
@@ -394,27 +372,79 @@ public class GetInfoPc
                 sw.WriteLine("=== STORAGE INFO ===");
                 try
                 {
+                    var physicalDisks = new Dictionary<string, (string Model, string Serial)>();
+
+                    try
+                    {
+                        using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
+                        foreach (ManagementObject disk in searcher.Get().Cast<ManagementObject>())
+                        {
+                            string deviceId = disk["DeviceID"]?.ToString() ?? "";
+                            string model = disk["Model"]?.ToString()?.Trim() ?? "Unknown Model";
+                            string serial = disk["SerialNumber"]?.ToString()?.Trim() ?? "Unknown Serial";
+
+                            physicalDisks[deviceId] = (model, serial);
+
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        sw.WriteLine($"  WMI Disk Info Error: {e.Message}");
+                    }
+
                     foreach (var drive in DriveInfo.GetDrives().Where(d => d.IsReady))
                     {
-                        double totalGB = drive.TotalSize / (1024.0 * 1024.0 * 1024.0);
-                        double freeGB = drive.TotalFreeSpace / (1024.0 * 1024.0 * 1024.0);
-                        double usedGB = totalGB - freeGB;
-                        double usedPercent = (usedGB / totalGB) * 100;
+                        try
+                        {
+                            double totalGB = drive.TotalSize / (1024.0 * 1024.0 * 1024.0);
+                            double freeGB = drive.TotalFreeSpace / (1024.0 * 1024.0 * 1024.0);
+                            double usedGB = totalGB - freeGB;
+                            double usedPercent = totalGB > 0 ? usedGB / totalGB * 100 : 0;
 
-                        sw.WriteLine($"[{drive.Name}]");
-                        sw.WriteLine($"  Label: {drive.VolumeLabel}");
-                        sw.WriteLine($"  Type: {drive.DriveType}");
-                        sw.WriteLine($"  Format: {drive.DriveFormat}");
-                        sw.WriteLine($"  Total: {totalGB:F2} GB");
-                        sw.WriteLine($"  Free: {freeGB:F2} GB");
-                        sw.WriteLine($"  Used: {usedGB:F2} GB ({usedPercent:F1}%)");
-                        sw.WriteLine($"  Available: {drive.AvailableFreeSpace / (1024.0 * 1024.0 * 1024.0):F2} GB");
+                            sw.WriteLine($"[{drive.Name.TrimEnd('\\')}]");
+
+                            (string Model, string Serial) diskInfo = ("Unknown Model", "Unknown Serial");
+
+                            using (var partitionSearcher = new ManagementObjectSearcher(
+                                $"ASSOCIATORS OF {{Win32_LogicalDisk.DeviceID='{drive.Name.Replace("\\", "")}'}} WHERE ResultClass=Win32_DiskPartition"))
+                            {
+                                foreach (ManagementObject partition in partitionSearcher.Get().Cast<ManagementObject>())
+                                {
+                                    using var diskSearcher = new ManagementObjectSearcher(
+                                        $"ASSOCIATORS OF {{Win32_DiskPartition.DeviceID='{partition["DeviceID"]}'}} WHERE ResultClass=Win32_DiskDrive");
+                                    foreach (ManagementObject disk in diskSearcher.Get().Cast<ManagementObject>())
+                                    {
+                                        string deviceId = disk["DeviceID"]?.ToString() ?? "";
+                                        if (physicalDisks.TryGetValue(deviceId, out var info))
+                                        {
+                                            diskInfo = info;
+                                        }
+
+                                    }
+                                }
+                            }
+                            sw.WriteLine($"  Model: {diskInfo.Model}");
+                            sw.WriteLine($"  Serial: {diskInfo.Serial}");
+                            sw.WriteLine($"  Label: {drive.VolumeLabel}");
+                            sw.WriteLine($"  Type: {drive.DriveType}");
+                            sw.WriteLine($"  Format: {drive.DriveFormat}");
+                            sw.WriteLine($"  Total: {totalGB:F2} GB");
+                            sw.WriteLine($"  Free: {freeGB:F2} GB");
+                            sw.WriteLine($"  Used: {usedGB:F2} GB ({usedPercent:F1}%)");
+                            sw.WriteLine($"  Available: {drive.AvailableFreeSpace / (1024.0 * 1024.0 * 1024.0):F2} GB");
+                            sw.WriteLine();
+                        }
+                        catch (Exception ex)
+                        {
+                            sw.WriteLine($"  Error processing drive {drive.Name}: {ex.Message}");
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
                     sw.WriteLine($"Storage info error: {ex.Message}");
                 }
+
                 sw.WriteLine();
 
                 sw.WriteLine("=== SOFTWARE INFO ===");
@@ -508,7 +538,6 @@ public class GetInfoPc
         }
     }
 
-
     private static string GetArchitecture(int archCode)
     {
         return archCode switch
@@ -570,165 +599,6 @@ public class GetInfoPc
         bool upToDate = ((state >> 8) & 0xFF) == 1;
 
         return $"Enabled: {enabled}, Up to date: {upToDate}";
-    }
-
-    public static void ShowSystemInfoPanels()
-    {
-        Console.Clear();
-
-        try
-        {
-            AnsiConsole.Progress()
-                .Columns(
-                [
-                new TaskDescriptionColumn(),
-                new ProgressBarColumn(),
-                new PercentageColumn(),
-                new SpinnerColumn()
-                ])
-                .Start(ctx =>
-                {
-                    var task1 = ctx.AddTask($"[{GraphicSettings.AccentColor}]Collecting hardware info[/]");
-                    var task2 = ctx.AddTask($"[{GraphicSettings.AccentColor}]Gathering system data[/]");
-
-                    for (int i = 0; i < 100; i += 10)
-                    {
-                        task1.Increment(10);
-                        task2.Increment(10);
-                        Thread.Sleep(50);
-                    }
-                });
-
-            Console.Clear();
-
-            var root = new Tree($"[{GraphicSettings.AccentColor}]📊 System Information[/]")
-            {
-                Style = new Style(GraphicSettings.GetColor(GraphicSettings.AccentColor), null, Decoration.None)
-            };
-
-            var generalNode = root.AddNode($"[{GraphicSettings.AccentColor}]📋 General Information[/]");
-            generalNode.AddNode(EscapeMarkup($"💻 Computer Name: [{GraphicSettings.SecondaryColor}]{Environment.MachineName}[/]"));
-            generalNode.AddNode(EscapeMarkup($"👤 User Name: [{GraphicSettings.SecondaryColor}]{Environment.UserName}[/]"));
-            generalNode.AddNode(EscapeMarkup($"🏢 Domain: [{GraphicSettings.SecondaryColor}]{Environment.UserDomainName}[/]"));
-            generalNode.AddNode(EscapeMarkup($"👑 Admin Rights: [{GraphicSettings.SecondaryColor}]{(IsUserAdministrator() ? "Yes" : "No")}[/]"));
-            generalNode.AddNode(EscapeMarkup($"⏱️ System Uptime: [{GraphicSettings.SecondaryColor}]{TimeSpan.FromMilliseconds(Environment.TickCount):dd\\.hh\\:mm\\:ss}[/]"));
-            generalNode.AddNode(EscapeMarkup($"🔢 Processors: [{GraphicSettings.SecondaryColor}]{Environment.ProcessorCount}[/]"));
-
-            var osNode = root.AddNode($"[{GraphicSettings.AccentColor}]💿 Operating System[/]");
-            osNode.AddNode(EscapeMarkup($"🏷️ OS Version: [{GraphicSettings.SecondaryColor}]{Environment.OSVersion}[/]"));
-            osNode.AddNode(EscapeMarkup($"⚡ 64-bit OS: [{GraphicSettings.SecondaryColor}]{(Environment.Is64BitOperatingSystem ? "Yes" : "No")}[/]"));
-            osNode.AddNode(EscapeMarkup($"🔧 64-bit Process: [{GraphicSettings.SecondaryColor}]{(Environment.Is64BitProcess ? "Yes" : "No")}[/]"));
-
-            var hardwareNode = root.AddNode($"[{GraphicSettings.AccentColor}]🖥️ Hardware Information[/]");
-
-            try
-            {
-                string cpuInfo = GetHardwareInfo("Win32_Processor", "Name");
-                hardwareNode.AddNode(EscapeMarkup($"💻 CPU: [{GraphicSettings.SecondaryColor}]{TruncateString(cpuInfo, 60)}[/]"));
-            }
-            catch (Exception ex)
-            {
-                hardwareNode.AddNode(EscapeMarkup($"[red]CPU Error: {ex.Message}[/]"));
-            }
-
-            try
-            {
-                string gpuInfo = GetHardwareInfo("Win32_VideoController", "Name");
-                hardwareNode.AddNode(EscapeMarkup($"🎮 GPU: [{GraphicSettings.SecondaryColor}]{TruncateString(gpuInfo, 60)}[/]"));
-            }
-            catch (Exception ex)
-            {
-                hardwareNode.AddNode(EscapeMarkup($"[red]GPU Error: {ex.Message}[/]"));
-            }
-
-            try
-            {
-                string ramInfo = GetHardwareInfo("Win32_ComputerSystem", "TotalPhysicalMemory");
-                if (!string.IsNullOrEmpty(ramInfo) && long.TryParse(ramInfo, out long ramBytes))
-                {
-                    double ramGB = ramBytes / (1024.0 * 1024.0 * 1024.0);
-                    hardwareNode.AddNode(EscapeMarkup($"🧠 RAM: [{GraphicSettings.SecondaryColor}]{ramGB:F2} GB[/]"));
-                }
-                else
-                {
-                    hardwareNode.AddNode(EscapeMarkup($"🧠 RAM: [{GraphicSettings.SecondaryColor}]Information unavailable[/]"));
-                }
-            }
-            catch (Exception ex)
-            {
-                hardwareNode.AddNode(EscapeMarkup($"[red]RAM Error: {ex.Message}[/]"));
-            }
-
-            var dotnetNode = root.AddNode($"[{GraphicSettings.AccentColor}]🔷 .NET Information[/]");
-            dotnetNode.AddNode(EscapeMarkup($"📦 .NET Version: [{GraphicSettings.SecondaryColor}]{Environment.Version}[/]"));
-
-            var storageNode = root.AddNode($"[{GraphicSettings.AccentColor}]💾 Storage Information[/]");
-            try
-            {
-                var drives = DriveInfo.GetDrives().Where(d => d.IsReady).Take(5);
-                foreach (var drive in drives)
-                {
-                    double totalGB = drive.TotalSize / (1024.0 * 1024.0 * 1024.0);
-                    double freeGB = drive.TotalFreeSpace / (1024.0 * 1024.0 * 1024.0);
-                    double usedPercent = 100 - (drive.TotalFreeSpace * 100 / drive.TotalSize);
-
-                    string statusColor = usedPercent > 90 ? "red" : usedPercent > 70 ? "yellow" : "green";
-
-                    storageNode.AddNode(EscapeMarkup(
-                        $"{drive.Name} {drive.VolumeLabel} | " +
-                        $"[{statusColor}]{usedPercent:F1}% used[/] | " +
-                        $"[{GraphicSettings.AccentColor}]{freeGB:F1} GB free of {totalGB:F1} GB[/]"));
-                }
-            }
-            catch (Exception ex)
-            {
-                storageNode.AddNode(EscapeMarkup($"[red]Drive Error: {ex.Message}[/]"));
-            }
-
-            AnsiConsole.Write(root);
-
-            AnsiConsole.WriteLine();
-            AnsiConsole.Write(new Rule($"[{GraphicSettings.NeutralColor}]Press any key to continue...[/]").RuleStyle(GraphicSettings.SecondaryColor).LeftJustified());
-
-            Console.ReadKey();
-
-            Console.Clear();
-            ShowDriveInfo();
-
-            if (AnsiConsole.Confirm($"\n[{GraphicSettings.AccentColor}]Do you want to create a detailed report file?[/]", true))
-            {
-                Main_Information_Collection();
-            }
-        }
-        catch (Exception ex)
-        {
-            AnsiConsole.WriteException(ex, ExceptionFormats.ShortenEverything);
-            Console.WriteLine("\nPress any key to continue...");
-            Console.ReadKey();
-        }
-    }
-
-    private static string EscapeMarkup(string text)
-    {
-        if (string.IsNullOrEmpty(text))
-            return text;
-
-        text = text.Replace("\\[", "TEMP_OPEN")
-                   .Replace("\\]", "TEMP_CLOSE")
-                   .Replace("[", "\\[")
-                   .Replace("]", "\\]")
-                   .Replace("TEMP_OPEN", "\\[")
-                   .Replace("TEMP_CLOSE", "\\]");
-
-        return text;
-    }
-
-    private static string TruncateString(string text, int maxLength)
-    {
-        if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
-            return text;
-
-        return text[..(maxLength - 3)] + "...";
     }
 
     public static void ShowDriveInfo()

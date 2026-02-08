@@ -138,7 +138,7 @@ public class Rain
         var content = new Rows(
             new Text("This programm made by me =)"),
             new Text(""),
-            new Text("Anyone can predict the future... but only the dreamer makes it come true", new Style(Color.White))
+            new Text("Anyone can predict the future... but only the dreamer makes it come true", new Style(GraphicSettings.GetThemeColor))
         );
 
         var panel = new Panel(content)
@@ -147,7 +147,7 @@ public class Rain
             .RoundedBorder()
             .Expand();
         AnsiConsole.Write(panel);
-        AnsiConsole.Write(new Rule($"[{GraphicSettings.SecondaryColor}]Press any key[/]").RuleStyle(GraphicSettings.AccentColor));
+        AnsiConsole.Write(new Rule($"[{GraphicSettings.NeutralColor}]Press any key[/]").RuleStyle(GraphicSettings.AccentColor));
         Console.ReadKey();
     }
 }
